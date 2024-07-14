@@ -1,6 +1,4 @@
 from django.shortcuts import render
-
-from django.shortcuts import render
 from django.http import JsonResponse
 from rest_framework.decorators import api_view
 import json 
@@ -12,11 +10,12 @@ import jwt
 from django.conf import settings
 from django.core import serializers
 
+# BASE URL FOR of backend
 BASE_URL = "http://127.0.0.1:8000/"
 # TODO: Forgot password
 # TODO: Reset password
 
-
+# Verify the token and return true if valid else return false
 def verify_token(token):
     try:
         if not token:
@@ -41,11 +40,12 @@ def signup(request):
             email = data.get('email', '')
             full_name = data.get('full_name', '')
             password = data.get('password', '')
+            # Check for validation
             if (email == None or email == '') or (full_name == None or full_name == '') or (password == None or password == ''):
                 data = {"error":"none fields","message":"Please enter details"}
                 return JsonResponse(data)
             data = {"success": "success"}
-            # Check the User's  phone number or email already exists
+            # Check the User's email already exists
             try:
                 CustomUser.objects.get(email=email)
                 return JsonResponse({'error': 'user already exists', 'message': 'User with this email already exists'}, status=400)
@@ -72,7 +72,7 @@ def signup(request):
             data = {"error":"method not allowed","message": "Method not allowed"}
             return JsonResponse(data)
     except Exception as e:
-        return JsonResponse({"error": f"Something went wrong {str(e)}"})
+        return JsonResponse({"error": f"Something went wrong : {str(e)}"})
 
 # POST - Logging in user with required parameters : Login not required
 @api_view(["POST"])
@@ -84,7 +84,7 @@ def login(request):
         password = data.get('password','')
         try:
             if (email == None or email == '') or (password == None or password == ''):
-                data = {"error":"none fields","message":"Please enter details"}
+                data = {"error":"none fields","message":"Email and password are required"}
                 return JsonResponse(data)
             # Searching user with phone number
             user = authenticate(email=email, password=password)
@@ -158,22 +158,6 @@ def profile(request):
         'get_profile': get_profile
     }
     return JsonResponse(context)
-
-def wihslist(request):
-    # We have to make this
-    pass
-
-def cart(request):
-    # We have to make this
-    pass
-
-def products(request):
-    # We have to make this
-    pass
-
-def orders(request):
-    #we have to make this
-    pass
     
 
 # POST - adds a new address : Login Required
