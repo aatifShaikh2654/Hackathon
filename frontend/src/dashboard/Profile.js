@@ -10,7 +10,6 @@ function Profile() {
     const { user } = useContext(UserContext);
     const [editProfile, setEditProfile] = useState(false);
 
-
     return (
         <>
             <div className="container">
