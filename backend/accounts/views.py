@@ -24,6 +24,7 @@ def verify_token(token):
         headers = {"Authorization": f"Bearer {token}"}
         body = {"token":token}
         result = requests.post(url, headers=headers, data=body)
+        print(result)
         if result.status_code == 200:
             return {"success":True}
         else:

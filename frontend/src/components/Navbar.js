@@ -1,8 +1,20 @@
-import React from 'react'
+import React, { useContext, useEffect } from 'react'
 import styles from '../styles/navbar.module.css'
 import { Link } from 'react-router-dom'
+import UserContext from '../context/user/UserContext'
 
 const Navbar = () => {
+
+    const { checkUserIsAuthenticated, getUser, user } = useContext(UserContext)
+    const token = localStorage.getItem("token")
+
+    useEffect(() => {
+        if (token) {
+            getUser();
+        }
+        console.log(user);
+    }, [])
+
   return (
     <>
         <header className='container'>
