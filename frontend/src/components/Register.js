@@ -28,6 +28,7 @@ const Register = () => {
                   <div className={styles.button1}>
                     <button type="button" class="btn btn-primary">Register</button>
                   </div>
+                  
                 </div>
               </div>
             </div>
