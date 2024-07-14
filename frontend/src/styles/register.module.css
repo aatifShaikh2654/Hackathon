@@ -1,0 +1,84 @@
+.formContainer{
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* padding: 0px 20px; */
+}
+.formContainer form{
+    width: 100%;
+}
+.title{
+    margin-top: 70px;
+}
+.title h1{
+    font-size: 2rem;
+    /* text-align: center; */
+    padding: 20px 0px;
+    font-weight: 500;
+    color: var(--black);
+    font-family: nohem-regular;
+}
+.forms{
+    width: 500px;
+    /* padding: 1vw 14vw; */
+}
+.forms .input_field2{
+    padding: 10px;
+}
+.forms .input_field2 span{
+    font-size: 1.2rem;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    font-family: nohem-regular;
+}
+.forms .input_field2 input{
+    padding: 10px 5px;
+    outline: none;
+    width: 100%;
+    border: 1px solid var(--black);
+    border-radius: 10px;
+}
+
+.formcheck{
+    padding: 20px 10px;
+    display: flex;
+}
+
+.formcheckinput{
+    height: 25px;
+    width: 25px;
+    border-radius: 50% !important;
+}
+.button1{
+    margin:20px 10px;
+}
+.register p{
+    padding: 10px 10px;
+    font-size: 1.2rem;
+}
+.google{
+    font-size: 1.2rem;
+    font-weight: 500;
+    margin-left: 10px;
+}
+@media(max-width:999px){
+    .title h1{
+        font-size: 3.2rem;
+    }
+    .forms{
+        width: 100%;
+        padding: 1rem 4rem;
+    }
+    .forms .input_field2{
+        padding: 10px;
+    }
+    .forms .input_field2 span{
+        font-size: 1rem;
+    }
+    .register p{
+        padding: 10px 10px;
+        font-size: 1.2rem;
+    }
+}
