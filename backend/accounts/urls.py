@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from accounts import views
 from django.conf import settings
 from django.conf.urls.static import static
@@ -14,5 +14,6 @@ urlpatterns = [
     path("addAddress/", views.addAddress, name="addAddress"),
     path("updateAddress/", views.updateAddress, name="updateAddress"),
     path("deleteAddress/<int:id>/", views.deleteAddress, name="deleteAddress"),
+    path("",include("mainapp.urls"))
 
 ] + static(settings.MEDIA_URL, docummen_root=settings.MEDIA_ROOT)
