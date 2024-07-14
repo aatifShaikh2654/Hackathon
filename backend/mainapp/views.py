@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework import generics
 from .models import Book
 from .serializers import BookSerializer
-from rest_framework.response import JsonResponse
+from django.http import JsonResponse
 
 # Create your views here.
 class Books(generics.RetrieveUpdateDestroyAPIView):
