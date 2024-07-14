@@ -1,9 +1,9 @@
 import './App.css';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Layout from './dashboard/Layout';
 import Dashboard from './dashboard/Dashboard';
 import Register from './components/Register'
 import Login from './components/Login';
+import Navbar from './components/Navbar';
 
 function App() {
 
@@ -20,11 +20,11 @@ function App() {
   return (
     <>
       <Router>
+      <Navbar />
         <Routes>
           <Route path='/' element={<Register />} />
           <Route path='/login' element={<Login/>} />
-          <Route exact path="/dashboard" element={<Layout />}>
-            <Route index element={<Dashboard />} />
+          <Route exact path="/dashboard" element={<Dashboard />}>
           </Route>
         </Routes>
       </Router>
