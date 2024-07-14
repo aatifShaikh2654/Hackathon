@@ -88,7 +88,7 @@ class Books(generics.RetrieveUpdateDestroyAPIView):
                 settings.DEFAULT_FROM_EMAIL,
                 ['uveshpathan665@gmail.com'],
                 )
-                # email.attach('form_submission.pdf', pdf_buffer.getvalue(), 'application/pdf')
+                email.attach()
                 email.send()
 
                 return JsonResponse({"success": True, "book": serializer.data})
