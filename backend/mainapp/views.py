@@ -18,9 +18,10 @@ def check_value(value):
 # Create your views here.
 class Books(generics.RetrieveUpdateDestroyAPIView):    
     def get(self, request):
+
         return JsonResponse({"success":True})
 
-    def post(self,request):
+    def post(self, request):
         try:
             data = json.loads(request.body)
             isbn = data.get('isbn')
@@ -29,7 +30,6 @@ class Books(generics.RetrieveUpdateDestroyAPIView):
             publisher = data.get('publisher')
             year  = data.get('year')
             date_compos = year.split('-')
-            print(date_compos)
             year = datetime(int(date_compos[2]),int(date_compos[1]),int(date_compos[0])).strftime("%Y-%m-%d")
             genre = data.get('genre')
             quantity = data.get('quantity')
@@ -39,25 +39,53 @@ class Books(generics.RetrieveUpdateDestroyAPIView):
             else:
                 return JsonResponse({"error":"Please provide all required fields"})
             
-            book = Book.objects.create(isbn=isbn, title=title, publisher=publisher, year=year, genre=genre, quantity=quantity)
-            if available:
-                book.available = available
-                book.save()
-            serializer = BookSerializer(book, many=True)
-            print("Serializer",serializer.data)
-            return JsonResponse(serializer.data)
+            book = Book.objects.create(isbn=isbn, title=title,author=author, publisher=publisher, year=year, genre=genre, quantity=quantity, available=available if available is not None else True)
+            serializer = BookSerializer(book)
+            return JsonResponse({"success": True, "book": serializer.data})
         except Exception as e:
             return JsonResponse({"error":str(e)})
     
 
     def put(self,request):
-        return JsonResponse({"success":"I am in put"})
+        try:
+            data = json.loads(request.body)
+            isbn = data.get('isbn')
+            try:
+                book = Book.objects.get(isbn=isbn)
+            except Book.DoesNotExist:
+                return JsonResponse({"error":"Book not found"}) 
+            title = data.get('title')
+            author = data.get('author')
+            publisher = data.get('publisher')
+            year  = data.get('year')
+            date_compos = year.split('-')
+            if check_value(year):
+                year = datetime(int(date_compos[2]),int(date_compos[1]),int(date_compos[0])).strftime("%Y-%m-%d")
+            genre = data.get('genre')
+            quantity = data.get('quantity')
+            available = data.get('available')
+            if check_value(title):
+                book.title = title
+            if check_value(author):
+                book.author = author
+            if check_value(publisher):
+                book.publisher = publisher
+            if check_value(year):
+                book.year = year
+            if check_value(genre):
+                book.genre = genre
+            if check_value(available):
+                book.available = available
+
+            book.save()    
+            serializer = BookSerializer(book)
+            return JsonResponse({"success": True, "book": serializer.data, "message": "Book updated successfully"})
+        except Exception as e:
+            return JsonResponse({"error":str(e)})
     
     def delete(self, request):
-        print("Id is:")
         body = json.loads(request.body)
         id = body.get('id')
-        print("Id is:",id)
         return JsonResponse({"success":"I am in delete"})
 
 
