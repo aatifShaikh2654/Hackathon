@@ -1,296 +1,79 @@
-.register {
-    /* background-image: url('../../public/images/ticket1.png'); */
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: cover;
-    height: 100vh;
+.formContainer{
+    height: 100%;
     width: 100%;
-    padding-top: 3vw !important;
-}
-
-
-.box {
-    background-color: #111;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-    border-radius: 30px;
-    padding: 2vw;
-    width: 35vw;
-    color: white;
-    position: relative;
-}
-
-.box h1 {
-    font-size: 2.5vw;
-    font-weight: bold;
-}
-
-
-.signin {
-    margin-top: 10px;
-    font-size: 15px;
-    color: #fff;
-}
-
-.signin a {
-    text-decoration: none;
-    color: blue;
-}
-
-.formstart {
-    margin-top: 35px;
-}
-
-.signup_form {}
-
-.signup_form .inputField {
-    outline: none;
-    border: none;
-    width: 100%;
-    padding: .9vw 1.5vw;
-    /* padding: 15px 30px; */
-    margin-bottom: 1.1vw;
-    border-radius: 12px;
-    font-weight: 500;
-    background-color: var(--white);
     display: flex;
-    align-items: center;
-}
-
-.signup_form .inputField input {
-    border: none;
-    outline: none;
-    width: 100%;
-    font-weight: 500;
-    font-size: 1.1vw;
-    color: var(--black);
-}
-
-.signup_form .inputField i {
-    color: #666;
-    margin-right: 10px;
-    font-size: 1.25vw;
-    margin-top: 1px;
-}
-
-.signup_form input::placeholder {
-    font-weight: 500;
-}
-
-
-.dropdown {
-    position: relative;
-}
-
-.dropdown .select {
-    width: 100%;
-    padding: .8vw 1.5vw;
-    margin-bottom: 1.1vw;
-    border-radius: 12px;
-    background-color: var(--white);
-    color: var(--black);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: relative;
-    z-index: 99;
-    cursor: pointer;
-    font-weight: 500;
-    color: var(--black);
-    font-size: 1.2vw;
-    border: 1px solid var(--white);
-}
-
-.dropdown.active .select {
-    border: 1px solid var(--accent);
-}
-
-.dropdown .select i:first-child {
-    font-size: 1.25vw;
-    margin-right: 10px;
-}
-
-.dropdown .select i {
-    color: var(--black);
-    transition: all .5s ease;
-}
-
-.dropdown.active .select i:last-child {
-    transform: rotate(180deg);
-}
-
-.dropdown ul {
-    position: absolute;
-    width: 100%;
-    top: 50%;
-    left: 0;
-    right: 0;
-    height: 12px;
-    background-color: #fff;
-    color: var(--black);
-    padding-left: 0px;
-    z-index: 1;
-    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.2);
-    border-radius: 12px;
-    overflow: hidden;
-    transition: all .5s ease;
-}
-
-
-.dropdown.active ul {
-    top: 0;
-    height: 10.3vw;
-}
-
-.dropdown ul li:first-child {
-    padding-top: 4.7vw !important;
-}
-
-.dropdown ul li {
-    list-style-type: none;
-    padding: 10px 30px;
-    border-bottom: 1px solid #eee;
-    transition: all .5s ease;
-    cursor: pointer;
-    font-size: 1.1vw;
-    font-weight: 500;
-}
-
-.dropdown ul li:hover {
-    background-color: #eee;
-
-}
-
-.bttn1 {
-    width: 100%;
-    padding: 1vw;
-    font-size: 1.2vw;
-    margin-top: 20px;
-    margin-bottom: 20px;
-    border: none;
-    border-radius: 12px;
-    background-color: var(--accent);
-    color: #fff;
-    cursor: pointer;
-}
-
-.bttn1:hover {
-    background-color: blue
-}
-
-
-.bttn2 {
-    font-size: 1.1vw;
-    display: flex;
-    align-items: center;
     justify-content: center;
-    background-color: #fff;
     align-items: center;
-    gap: 5px;
+}
+.formContainer form{
     width: 100%;
-    border: none;
+}
+.title{
+    margin-top: 70px;
+}
+.title h1{
+    font-size: 2rem;
+    /* text-align: center; */
+    padding: 20px 0px;
+    font-weight: 500;
+    color: var(--black);
+    font-family: nohem-regular;
+}
+.forms{
+    width: 500px;
+    /* padding: 1vw 14vw; */
+}
+.forms .input_field2{
     padding: 10px;
-    margin-top: 10px;
-    border-radius: 12px;
-    color: #000000;
-    cursor: pointer;
+}
+.forms .input_field2 span{
+    font-size: 1.2rem;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    font-family: nohem-regular;
+}
+.forms .input_field2 input{
+    padding: 10px 5px;
+    outline: none;
+    width: 100%;
+    border: 1px solid var(--black);
+    border-radius: 10px;
 }
 
-
-@media (max-width: 1099px) {
-
-    .box {
-        padding: 20px;
-        width: 70%;
-    }
-
-    .box h1 {
-        font-size: 2.2rem;
-    }
-
-    .signup_form .inputField i {
-        font-size: 1.05rem;
-        margin-top: 3px;
-    }
-
-    .signup_form .inputField {
-        padding: 11px 20px;
-        margin-bottom: 15px;
-    }
-
-    .signup_form .inputField input {
-        font-size: 1rem;
-    }
-
-    .dropdown {
-        margin-bottom: 15px;
-    }
-
-    .dropdown .select {
-        font-size: 1rem;
-        padding: 11px 20px;
-    }
-
-    .dropdown.active ul {
-        height: 140px;
-    }
-
-    .dropdown ul li:first-child {
-        padding-top: 60px !important;
-    }
-
-    .dropdown ul li {
-        font-size: 1rem;
-    }
-
-    .dropdown .select i:first-child {
-        font-size: 1.05em;
-    }
-
-    .bttn1 {
-        padding: 11px;
-        font-size: 1rem;
-    }
-
-    .bttn2 {
-        font-size: 1rem;
-    }
+.formcheck{
+    padding: 20px 10px;
+    display: flex;
 }
 
-@media (max-width: 999px) {
-    .box {
-        padding: 30px;
-    }
+.formcheckinput{
+    height: 25px;
+    width: 25px;
+    border-radius: 50% !important;
+}
+.button1{
+    margin:20px 20px;
+}
+.register p{
+    padding: 10px 10px;
+    font-size: 1.2rem;
 }
 
-@media (max-width: 768px) {
-    .box {
-        width: 80%;
+@media(max-width:999px){
+    .title h1{
+        font-size: 3.2rem;
     }
-}
-
-@media (max-width: 499px) {
-    .box {
-        width: 90%;
-        padding: 15px;
-    }
-
-    .signup_form .inputField input {
-        font-size: .9rem;
-    }
-
-    .dropdown .select {
-        font-size: .9rem;
-    }
-    .dropdown.active ul{
-        height: 135px;
-    }
-    .dropdown ul li {
-        font-size: .9rem;
-    }
-}
-
-@media (max-width: 399px) {
-    .box {
+    .forms{
         width: 100%;
+        padding: 1rem 4rem;
+    }
+    .forms .input_field2{
+        padding: 10px;
+    }
+    .forms .input_field2 span{
+        font-size: 1rem;
+    }
+    .register p{
+        padding: 10px 10px;
+        font-size: 1.2rem;
     }
 }
