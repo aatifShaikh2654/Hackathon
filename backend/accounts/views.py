@@ -161,6 +161,35 @@ def get_user(request):
             return JsonResponse({"error": "Authentication failed"})
     except Exception as e:
         return JsonResponse({"error": f"Something went wrong {str(e)}"})
+    
+
+@api_view(["GET"])
+def getAllUser(request):
+    try:
+        token = request.GET.get('token')
+        if not token:
+            return JsonResponse({"error": "token not found"})
+        result = verify_token(token)
+        if "error" in result and result["error"]:
+            return JsonResponse({"error": result["error"]})
+
+        if "success" in result and result["success"] == True:
+            decoded_token = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=["HS256"])
+            try:
+                user = CustomUser.objects.all()
+            except:
+                user = None
+            if user is not None:
+                data = {"email": user.email, "name": user.full_name}
+                return JsonResponse(data)
+            else:
+                return JsonResponse({"error": "User not found"})
+        else:
+            return JsonResponse({"error": "Authentication failed"})
+    except Exception as e:
+        return JsonResponse({"error": f"Something went wrong {str(e)}"})
+
+
 
 @api_view(["GET"])
 def profile(request):
