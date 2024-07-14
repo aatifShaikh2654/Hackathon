@@ -1,0 +1,60 @@
+.profile{
+    padding: 20px 0px;
+    width: 100%;
+}
+.books h1{
+    padding-bottom: 10px;
+    border-bottom: 3px solid var(--black);
+}
+.user h1{
+    padding-bottom: 10px;
+    border-bottom: 3px solid var(--black);
+}
+.searchbox{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.searchbox input{
+    width: 100%;
+    padding: 10px;
+    outline: none;
+    border-radius: 10px;
+    border: 1px solid var(--black);
+}
+.mybooks{
+    width: 100%;
+}
+.mybooks h1{
+    padding-bottom: 10px;
+    border-bottom: 3px solid var(--black);
+}
+.status{
+    margin-left: 150px;
+}
+.name{
+    display: flex;
+}
+.name img{
+    width: 70px;
+    height: auto;
+}
+.name .prof{
+    padding-left: 15px;
+    margin-bottom: 0;
+}
+.location{
+    display:flex;
+    /* justify-content: center; */
+    align-items: center;
+    font-size: 1.3rem;
+    margin-top: .1rem;
+}
+.location p{
+    padding-left: 10px;
+}
+.edit{
+    margin-top: 20px;
+    font-size: 1.2rem;
+}
