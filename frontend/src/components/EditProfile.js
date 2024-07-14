@@ -1,18 +1,54 @@
 import React, { useContext, useEffect, useState } from 'react'
 import input from '../styles/register.module.css';
 import UserContext from '../context/user/UserContext';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import StateContext from '../context/state/StateContext';
 
-const EditProfile = ({edit}) => {
+const EditProfile = ({ edit }) => {
 
     const [formData, setFormData] = useState('');
     const { user } = useContext(UserContext);
+    const { setLoading } = useContext(StateContext)
 
     useEffect(() => {
         setFormData(user)
     }, [])
 
     const handleChange = (e) => {
-        setFormData({...formData, [e.target.name] : e.target.value})
+        setFormData({ ...formData, [e.target.name]: e.target.value })
+    }
+
+    const handleSubmit = async (e) => {
+        const token = localStorage.getItem("token")
+        e.preventDefault();
+        try {
+            setLoading({ open: true, text: "Adding" })
+            const response = await axios.post(
+                "http://127.0.0.1:8000/" + `api/books/?token=${token}`,
+                {
+                    formData
+                },
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                }
+            );
+            const json = response.data;
+            if (json.success) {
+                toast.success("Success fully Updated")
+                edit(false)
+            } else {
+                toast.error(json.error || json.message)
+            }
+
+        } catch (error) {
+            console.log(error);
+            toast.error(error)
+        } finally {
+            setLoading({ open: false, text: '' })
+        }
     }
 
     return (

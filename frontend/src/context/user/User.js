@@ -9,7 +9,10 @@ const User = (props) => {
     const { setBooks } = useContext(StateContext)
     const [user, setUser] = useState('');
     const token = localStorage.getItem("token")
-
+    const [trending, setTrending] = useState([]);
+    const [arrival, setArrival] = useState([]);
+    const [otherBooks, setOtherBooks] = useState([]);
+    
 
     const getUser = async () => {
         try {
@@ -61,10 +64,15 @@ const User = (props) => {
             });
 
             const json = response.data;
-            console.log(json);
             if (json.success) {
                 const sorted = json.book.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
                 setBooks(sorted);
+                const trending = sorted.filter(item => item.trending);
+                setTrending(trending);
+                const arrival = sorted.filter(item => item.new_arrival);
+                setArrival(arrival);
+                const otherBooks = sorted.filter(item => !item.trending && !item.arrival);
+                setOtherBooks(otherBooks);
             } else {
                 toast.error(json.error || json.message);
             }
@@ -74,7 +82,7 @@ const User = (props) => {
     };
 
     return (
-        <UserContext.Provider value={{ user, setUser, getUser, checkUserIsAuthenticated, authenticated, getBooks }}>
+        <UserContext.Provider value={{ user, trending, otherBooks, arrival, setUser, getUser, checkUserIsAuthenticated, authenticated, getBooks }}>
             {props.children}
         </UserContext.Provider>
     )

@@ -6,13 +6,15 @@ import input from '../styles/register.module.css';
 import EditProfile from '../components/EditProfile';
 import Addbook from '../components/Addbook';
 import StateContext from '../context/state/StateContext';
+import UpdateBook from '../components/UpdateBook';
 
 function Profile() {
 
     const { user, getBooks } = useContext(UserContext);
-    const { books } = useContext(StateContext)
+    const { books, updateBook, setUpdateBook } = useContext(StateContext)
     const [editProfile, setEditProfile] = useState(false);
     const [addBook, setAddBook] = useState(false);
+    
 
     useEffect(() => {
         const token = localStorage.getItem("token")
@@ -21,7 +23,6 @@ function Profile() {
         }
     }, [])
 
-    console.log(books);
 
     return (
         <>
@@ -29,7 +30,7 @@ function Profile() {
                 <div className={styles.profile}>
                     <div className="row">
                         <div className="col-lg-8">
-                            {!editProfile && !addBook ? <div>
+                            {!editProfile && !addBook && !updateBook.open ? <div>
                                 <div className={styles.books}>
                                     <h1>Search Book</h1>
                                     <div className={styles.search}>
@@ -45,8 +46,8 @@ function Profile() {
                                         {user.role == "librarian" ? <button className='button border' onClick={()  => setAddBook(true)}>Add Book</button> : null}
                                     </div>
                                     
-                                    {books.length > 0 ? books.map((item, index) => {
-                                        return <Card index={index} data={item} />
+                                    {books.length > 0 ? books.slice(0, 10).map((item, index) => {
+                                        return <Card index={index} data={item} profile={true} />
                                     }) : <p>No Books </p>}
                                     <div className={styles.status}>
                                         <button className='button'>3 Days Remains</button>
@@ -57,6 +58,7 @@ function Profile() {
                             }
                             {editProfile ? <EditProfile edit={setEditProfile} /> : null}
                             {!editProfile && addBook ? <Addbook add={setAddBook} /> : null}
+                            {!editProfile && updateBook.open ? <UpdateBook /> : null}
                         </div>
                         <div className="col-lg-4">
                             <div className={styles.user}>
