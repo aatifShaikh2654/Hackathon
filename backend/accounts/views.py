@@ -9,6 +9,7 @@ import requests
 import jwt
 from django.conf import settings
 from django.core import serializers
+from .serializers import CustomUserSerializer
 
 # BASE URL FOR of backend
 BASE_URL = "http://127.0.0.1:8000/"
@@ -119,7 +120,8 @@ def login(request):
                     return JsonResponse({"error": str(e)})
                 # Logging in user with password
                 refresh = RefreshToken.for_user(user)
-                data = {"success":"success","access": str(refresh.access_token),"refresh": str(refresh)}
+                serialized_user = CustomUserSerializer(user)
+                data = {"success":"success","access": str(refresh.access_token),"user":serialized_user.data}
                 return JsonResponse(data)
             else:
                 # Authentication failed password is invalid
