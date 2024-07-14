@@ -153,7 +153,7 @@ def get_user(request):
             except:
                 user = None
             if user is not None:
-                data = {"email": user.email, "name": user.full_name}
+                data = {"success":True,"user":{"email": user.email, "name": user.full_name}}
                 return JsonResponse(data)
             else:
                 return JsonResponse({"error": "User not found"})
