@@ -7,6 +7,8 @@ from . import views
 
 urlpatterns = [
     path('books/',Books.as_view(),name="books"),
-    path("getBook",views.getBook,name="getBook"),
+    path("getBook/",views.getBook,name="getBook"),
+    path("getBooksByUser/",views.GetAllBooksByUser,name="getBooksByUser"),
+
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

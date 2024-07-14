@@ -5,6 +5,7 @@ from datetime import timezone
 class Book(models.Model):
     isbn = models.CharField(max_length=50,unique=True)
     title = models.CharField(max_length=100)
+    description = models.CharField(max_length=1000,null=True,blank=True)
     author = models.CharField(max_length=100)
     publisher = models.CharField(max_length=100)
     year = models.DateField()

@@ -73,6 +73,7 @@ class Books(generics.RetrieveUpdateDestroyAPIView):
                 title = data.get('title')
                 author = data.get('author')
                 publisher = data.get('publisher')
+                description = data.get('description')
                 year  = data.get('year')
                 date_compos = year.split('-')
                 year = datetime(int(date_compos[2]),int(date_compos[1]),int(date_compos[0])).strftime("%Y-%m-%d")
@@ -86,16 +87,16 @@ class Books(generics.RetrieveUpdateDestroyAPIView):
                 else:
                     return JsonResponse({"error":"Please provide all required fields"})
                 
-                book = Book.objects.create(isbn=isbn, title=title,author=author, publisher=publisher, year=year, genre=genre, quantity=quantity, available=available if available is not None else True, new_arrival=new_arrival if new_arrival is not None or not new_arrival == "" else False, trending= trending if trending is not None or not trending == "" else False)
+                book = Book.objects.create(isbn=isbn,description=description, title=title,author=author, publisher=publisher, year=year, genre=genre, quantity=quantity, available=available if available is not None else True, new_arrival=new_arrival if new_arrival is True or new_arrival is False else False, trending= trending if trending is True or trending is False else False)
                 serializer = BookSerializer(book)
-                email = EmailMessage(
-                'New Books Arrival',
-                'New Books Are Arrived Check it out',              
-                settings.DEFAULT_FROM_EMAIL,
-                ['uveshpathan665@gmail.com'],
-                )
-                email.attach()
-                email.send()
+                # email = EmailMessage(
+                # 'New Books Arrival',
+                # 'New Books Are Arrived Check it out',              
+                # settings.DEFAULT_FROM_EMAIL,
+                # ['uveshpathan665@gmail.com'],
+                # )
+                # email.attach()
+                # email.send()
 
                 return JsonResponse({"success": True, "book": serializer.data})
             else:
@@ -228,8 +229,9 @@ def getBook(request, isbn=None):
     except Exception as e:
         return JsonResponse({"error":str(e)})
     
-@api_view(["POST"])
-def borrowBook(request):
+
+@api_view(["GET"])
+def GetAllBooksByUser(request):
     try:
         token = request.GET.get('token')
         if not token:
@@ -245,25 +247,30 @@ def borrowBook(request):
                 user = CustomUser.objects.get(id=user_id)
             except Exception as e:
                 data = {"error": "User not found"}
-                return JsonResponse(data)    
+                return JsonResponse(data)
+            if not user:
+                return JsonResponse({"error": "User not found"})
+            transactions = Transaction.objects.filter(user=user)
+            # Now, fetch all unique books related to these transactions
+            related_books = Book.objects.filter(transaction__in=transactions).distinct()
+
+            serializer = BookSerializer(related_books, many=True)
+            return JsonResponse({"success": True, "books": serializer.data})
         else:
             return JsonResponse({"error": False, "message": "Please login first"})
-
     except Exception as e:
         return JsonResponse({"error":str(e)})
-
-
-
+    
 
 @api_view(['POST'])
 def checkout_book(request):
     # Assuming request data includes user_id and book_id
     user_id = request.data.get('user_id')
-    book_id = request.data.get('book_id')
+    isbn = request.data.get('isbn')
 
     # Retrieve user and book objects
     user = get_object_or_404(CustomUser, pk=user_id)
-    book = get_object_or_404(Book, pk=book_id)
+    book = get_object_or_404(Book, isbn=isbn)
 
     # Check if the book is available
     if not book.available:
