@@ -14,15 +14,15 @@ const Login = () => {
     const navigate = useNavigate();
 
     const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value })
         setError('')
+        setFormData({ ...formData, [e.target.name]: e.target.value })
     }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
             setLoading({ open: true, text: 'Verifying...' })
-            const response = await axios.post("http://127.0.0.1:8000/" + "api/auth/login", formData, {
+            const response = await axios.post("http://127.0.0.1:8000/" + "api/login/", formData, {
                 headers: {
                     'Content-type': "application/json"
                 },
@@ -33,7 +33,7 @@ const Login = () => {
             if (json.success) {
                 if (json.user.verified == true) {
                     toast.success(json.success)
-                    localStorage.setItem("token", json.authtoken)
+                    localStorage.setItem("token", json.access)
                     navigate('/')
                 } else {
                     toast.error("You are not Verified")
@@ -60,7 +60,7 @@ const Login = () => {
         <>
             <div className="container mt-5">
                 <div className={styles.formContainer}>
-                    <form action="">
+                    <form action="" onSubmit={handleSubmit}>
                         <div className="row">
                             <div className="col-12">
                                 <div className={styles.title}>
@@ -78,6 +78,7 @@ const Login = () => {
                                     <div className={styles.button1}>
                                         <button type="submit" class="button border">Login</button>
                                     </div>
+                                    {error ? <p style={{color: "red", padding: "0px 10px"}}>{error}</p> : null}
                                     <div className={styles.google}>
                                         <Link to="/register">Don't have an account, Register</Link>
                                     </div>
