@@ -40,8 +40,9 @@ def signup(request):
             email = data.get('email', '')
             full_name = data.get('full_name', '')
             password = data.get('password', '')
+            role = data.get('role', '')
             # Check for validation
-            if (email == None or email == '') or (full_name == None or full_name == '') or (password == None or password == ''):
+            if (email == None or email == '') or (full_name == None or full_name == '') or (password == None or password == '') or (role == None or role == ''):
                 data = {"error":"none fields","message":"Please enter details"}
                 return JsonResponse(data)
             data = {"success": "success"}
@@ -54,8 +55,15 @@ def signup(request):
                 # Creating a new user
                 user = CustomUser(email=email)
                 user.full_name = full_name
+                user.role = role
                 user.set_password(password)
                 user.save()
+
+                if role == 'librarian':    
+                    user.verified = False
+                    user.save()           
+                    data = {"success": "Registration successful"}
+                    return JsonResponse(data)
                 
                 user = authenticate(email=email, password=password)
                 # Checking password

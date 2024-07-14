@@ -41,6 +41,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     city = models.CharField(max_length=60, blank=True, null=True)
     state = models.CharField(max_length=60, blank=True, null=True)
     pincode = models.CharField(max_length=6, blank=True, null=True)
+    verified = models.BooleanField(default=True)
     reset_password_token = models.CharField(max_length=255, blank=True, null=True)
 
     objects = CustomUserManager()
