@@ -6,6 +6,8 @@ from django.http import JsonResponse
 from rest_framework.decorators import api_view
 import json
 from datetime import datetime
+from django.core.mail import EmailMessage
+from django.conf import settings
 
 
 def check_value(value):
@@ -19,10 +21,12 @@ def check_value(value):
 class Books(generics.RetrieveUpdateDestroyAPIView):    
     def get(self, request):
         try:
+            print("i'm in try")
             book = Book.objects.all()
-            serialzier = BookSerializer(book)
+            serialzier = BookSerializer(book, many = True)
             return JsonResponse({"success":True, "book":serialzier.data})   
         except Exception as e:
+            print("im in error")
             print(e)
             return JsonResponse({"error":"error"})
         
@@ -56,6 +60,15 @@ class Books(generics.RetrieveUpdateDestroyAPIView):
             
             book = Book.objects.create(isbn=isbn, title=title,author=author, publisher=publisher, year=year, genre=genre, quantity=quantity, available=available if available is not None else True)
             serializer = BookSerializer(book)
+            # Send PDF via email
+            email = EmailMessage(
+                'New Arrivals',
+                'New Books are arrived check .',              
+                settings.DEFAULT_FROM_EMAIL,
+                ['uveshpathan665@gmail.com'],
+            )
+            # email.attach('form_submission.pdf', pdf_buffer.getvalue(), 'application/pdf')
+            email.send()
             return JsonResponse({"success": True, "book": serializer.data})
         except Exception as e:
             return JsonResponse({"error":str(e)})
