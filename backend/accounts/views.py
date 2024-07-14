@@ -156,14 +156,16 @@ def get_user(request):
             except:
                 user = None
             if user is not None:
+                print("User",user)
                 serialized_users = CustomUserSerializer(user)
-                data = {"success":True,"user":{serialized_users.data}}
+                data = {"success":True,"user":serialized_users.data}
                 return JsonResponse(data)
             else:
                 return JsonResponse({"error": "User not found"})
         else:
             return JsonResponse({"error": "Authentication failed"})
     except Exception as e:
+        print("Error",str(e))
         return JsonResponse({"error": f"Something went wrong {str(e)}"})
     
 
