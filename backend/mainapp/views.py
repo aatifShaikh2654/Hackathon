@@ -30,14 +30,11 @@ def check_value(value):
 class Books(generics.RetrieveUpdateDestroyAPIView):    
     def get(self, request):
         try:
-            print("i'm in try")
             book = Book.objects.all()
             serialzier = BookSerializer(book, many = True)
             return JsonResponse({"success":True, "book":serialzier.data})   
         except Exception as e:
-            print("im in error")
-            print(e)
-            return JsonResponse({"error":"error"})
+            return JsonResponse({"error":f"error : {str(e)}"})
         
     def post(self, request):
         try:
@@ -75,8 +72,8 @@ class Books(generics.RetrieveUpdateDestroyAPIView):
                 publisher = data.get('publisher')
                 description = data.get('description')
                 year  = data.get('year')
-                date_compos = year.split('-')
-                year = datetime(int(date_compos[2]),int(date_compos[1]),int(date_compos[0])).strftime("%Y-%m-%d")
+                # date_compos = year.split('-')
+                # year = datetime(int(date_compos[2]),int(date_compos[1]),int(date_compos[0])).strftime("%Y-%m-%d")
                 genre = data.get('genre')
                 quantity = data.get('quantity')
                 new_arrival = data.get('new_arrival')
@@ -89,14 +86,6 @@ class Books(generics.RetrieveUpdateDestroyAPIView):
                 
                 book = Book.objects.create(isbn=isbn,description=description, title=title,author=author, publisher=publisher, year=year, genre=genre, quantity=quantity, available=available if available is not None else True, new_arrival=new_arrival if new_arrival is True or new_arrival is False else False, trending= trending if trending is True or trending is False else False)
                 serializer = BookSerializer(book)
-                # email = EmailMessage(
-                # 'New Books Arrival',
-                # 'New Books Are Arrived Check it out',              
-                # settings.DEFAULT_FROM_EMAIL,
-                # ['uveshpathan665@gmail.com'],
-                # )
-                # email.attach()
-                # email.send()
 
                 return JsonResponse({"success": True, "book": serializer.data})
             else:
@@ -202,9 +191,10 @@ class Books(generics.RetrieveUpdateDestroyAPIView):
 
 
 @api_view(["GET"])
-def getBook(request, isbn=None):
+def getBook(request):
     try:
         token = request.GET.get('token')
+        isbn = request.GET.get('isbn')
         if not token:
             return JsonResponse({"error": "Invalid token"})
         result = verify_token(token)
@@ -263,30 +253,66 @@ def GetAllBooksByUser(request):
     
 
 @api_view(['POST'])
-def checkout_book(request):
-    # Assuming request data includes user_id and book_id
-    user_id = request.data.get('user_id')
-    isbn = request.data.get('isbn')
+def checkoutBook(request):
+    try:
+        token = request.GET.get('token')
+        if not token:
+            return JsonResponse({"error": "Invalid token"})
+        result = verify_token(token)
+        if "error" in result and result["error"]:
+            return JsonResponse({"error": result["error"]})
+        
+        if "success" in result and result["success"] == True:
+            try:
+                decoded_token = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=['HS256'])
+                user_id = decoded_token["user_id"]
+                user = CustomUser.objects.get(id=user_id)
+            except Exception as e:
+                data = {"error": "User not found"}
+                return JsonResponse(data)
+            if not user:
+                return JsonResponse({"error": "User not found"})
+            # Assuming request data includes user_id and book_id
+            
 
-    # Retrieve user and book objects
-    user = get_object_or_404(CustomUser, pk=user_id)
-    book = get_object_or_404(Book, isbn=isbn)
+            isbn = request.data.get('isbn')
+            # full_name = request.data.get('full_name')
+            # email = request.data.get('email')
+            phone_number = request.data.get('phone_number')
+            # address = request.data.get('address')
+            # city = request.data.get('city')
+            # state = request.data.get('state')
+            # pincode = request.data.get('pincode')
+            quantity = request.data.get('quantity')
 
-    # Check if the book is available
-    if not book.available:
-        return Response({'error': 'Book is already checked out'}, status=status.HTTP_400_BAD_REQUEST)
+            if check_value(isbn) == False:
+                return  JsonResponse({"error": "ISBN number is required"})
+            # Retrieve user and book objects
+            book = get_object_or_404(Book, isbn=isbn)
 
-    # Create a transaction record for checkout
-    transaction = Transaction(user=user, book=book, transaction_type='checkout')
-    transaction.save()
+            # Check if the book is available
+            if not book.available:
+                return Response({'error': 'Book is not Available'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            if book.quantity < int(quantity):
+                return Response({'error': f'Only {book.quantity} books available'}, status=status.HTTP_400_BAD_REQUEST)
 
-    # Update book availability status
-    book.available = False
-    book.save()
+            # Create a transaction record for checkout
+            return_date = ""
+            transaction = Transaction(user=user, book=book, return_date=return_date, transaction_type='checkout')
+            transaction.save()
 
-    # Serialize and return transaction data
-    serializer = TransactionSerializer(transaction)
-    return Response(serializer.data, status=status.HTTP_201_CREATED)
+            # Update book availability status
+            book.available = False
+            book.save()
+
+            # Serialize and return transaction data
+            serializer = TransactionSerializer(transaction)
+            return Response({"success":True, "book":serializer.data}, status=status.HTTP_201_CREATED)
+        else:
+            return JsonResponse({"error": False, "message": "Please login first"})
+    except Exception as e:
+        return JsonResponse({"error":str(e)})
 
 @api_view(['POST'])
 def return_book(request):

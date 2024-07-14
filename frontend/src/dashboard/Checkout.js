@@ -72,6 +72,10 @@ function Checkout() {
                                             <span>to *</span>
                                             <input type="date" className='input' placeholder='' />
                                         </div>
+                                        <div className={styles.details}>
+                                            <span>Quantiy*</span>
+                                            <input type="number" className='input' placeholder='' />
+                                        </div>
                                     </div>
                                 </div>
                             </div>

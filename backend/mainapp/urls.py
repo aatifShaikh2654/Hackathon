@@ -9,6 +9,7 @@ urlpatterns = [
     path('books/',Books.as_view(),name="books"),
     path("getBook/",views.getBook,name="getBook"),
     path("getBooksByUser/",views.GetAllBooksByUser,name="getBooksByUser"),
+    path("checkoutBook/",views.checkoutBook,name="checkoutBook"),
 
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
