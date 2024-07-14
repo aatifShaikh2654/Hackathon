@@ -10,7 +10,13 @@ from .utils import verify_token
 from django.conf import settings
 import jwt
 from django.core.mail import EmailMessage
+from django.shortcuts import get_object_or_404
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
 from accounts.models import CustomUser
+from .models import Book, Transaction
+from .serializers import TransactionSerializer
 
 
 def check_value(value):
@@ -217,6 +223,8 @@ def getBook(request, isbn=None):
             book = Book.objects.get(isbn=isbn)
             serializer = BookSerializer(book)
             return JsonResponse({"success": True, "book": serializer.data})
+        else:
+            return JsonResponse({"error": False, "message": "Please login first"})
     except Exception as e:
         return JsonResponse({"error":str(e)})
     
@@ -238,5 +246,62 @@ def borrowBook(request):
             except Exception as e:
                 data = {"error": "User not found"}
                 return JsonResponse(data)    
+        else:
+            return JsonResponse({"error": False, "message": "Please login first"})
+
     except Exception as e:
         return JsonResponse({"error":str(e)})
+
+
+
+
+@api_view(['POST'])
+def checkout_book(request):
+    # Assuming request data includes user_id and book_id
+    user_id = request.data.get('user_id')
+    book_id = request.data.get('book_id')
+
+    # Retrieve user and book objects
+    user = get_object_or_404(CustomUser, pk=user_id)
+    book = get_object_or_404(Book, pk=book_id)
+
+    # Check if the book is available
+    if not book.available:
+        return Response({'error': 'Book is already checked out'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Create a transaction record for checkout
+    transaction = Transaction(user=user, book=book, transaction_type='checkout')
+    transaction.save()
+
+    # Update book availability status
+    book.available = False
+    book.save()
+
+    # Serialize and return transaction data
+    serializer = TransactionSerializer(transaction)
+    return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+@api_view(['POST'])
+def return_book(request):
+    # Assuming request data includes transaction_id
+    transaction_id = request.data.get('transaction_id')
+
+    # Retrieve transaction object
+    transaction = get_object_or_404(Transaction, pk=transaction_id)
+
+    # Ensure the book is checked out
+    if transaction.transaction_type != 'checkout':
+        return Response({'error': 'Transaction is not a checkout'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Update transaction for return
+    transaction.transaction_type = 'return'
+    transaction.save()
+
+    # Update book availability status
+    book = transaction.book
+    book.available = True
+    book.save()
+
+    # Serialize and return updated transaction data
+    serializer = TransactionSerializer(transaction)
+    return Response(serializer.data)

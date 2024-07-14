@@ -411,29 +411,46 @@ def profile(request):
 
 @api_view(["POST"])        
 def updateProfile(request):
-    token = request.query_params.get('token')
-    data = json.loads(request.body)
-    if token:
+    try:
+        token = request.query_params.get('token')
+        data = json.loads(request.body)
+        if not token:
+            return JsonResponse({"error": "Token missing"})
         decoded_token = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=['HS256'])
-        url = BASE_URL + "api/token/verify/"
-        headers = {"Authorization":f"bearer {token}"}
-        body = {"token":token}
-        result = requests.post(url, headers=headers,data=body)
-        if result.status_code == 200:
-            user_id = decoded_token["user_id"]
-            try:
-                user = CustomUser.objects.get(id=user_id)
-            except:
-                user = None
-            if user is None:
-                data = {"error":"User not found"}
-                return JsonResponse(data, safe=False)
-            if data.get("email") != None or data.get("email") != "null": user.email= data.get("email")
-            if data.get("full_name") != None or data.get("full_name") != "null": user.full_name = data.get("full_name")
-            user.save()
-            data = {"success":"Profile updated successfully"}
-        return JsonResponse(data, safe=False)
-    return JsonResponse("DATA", safe=False)
+        user_id = decoded_token.get("user_id")
+        if not user_id:
+            return JsonResponse({"error": "Invalid token"})
+        user = CustomUser.objects.filter(id=user_id).first()
+        if not user:
+            return JsonResponse({"error": "User not found"})
+
+        # Update user fields based on received data
+        if data.get("email") is not None and data.get("email") != "null":
+            user.email = data.get("email")
+        if data.get("full_name") is not None and data.get("full_name") != "null":
+            user.full_name = data.get("full_name")
+        if data.get("phone_number") is not None and data.get("phone_number") != "null":
+            user.phone_number = data.get("phone_number")
+        if data.get("address") is not None and data.get("address") != "null":
+            user.address = data.get("address")
+        if data.get("city") is not None and data.get("city") != "null":
+            user.city = data.get("city")
+        if data.get("state") is not None and data.get("state") != "null":
+            user.state = data.get("state")
+        if data.get("pincode") is not None and data.get("pincode") != "null":
+            user.pincode = data.get("pincode")
+
+        user.save()
+        serialized_user = CustomUserSerializer(user)
+        return JsonResponse({"success": "Profile updated successfully","user":serialized_user.data})
+
+    except jwt.ExpiredSignatureError:
+        return JsonResponse({"error": "Token expired"})
+    except jwt.InvalidTokenError:
+        return JsonResponse({"error": "Invalid token"})
+    except Exception as e:
+        return JsonResponse({"error": str(e)})
+    
 
 # GET - Check if user is Authenticated - returns success:True if user is authenticated
 @api_view(["GET"])
