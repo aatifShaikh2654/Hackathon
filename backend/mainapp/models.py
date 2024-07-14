@@ -8,7 +8,7 @@ class Book(models.Model):
     description = models.CharField(max_length=1000,null=True,blank=True)
     author = models.CharField(max_length=100)
     publisher = models.CharField(max_length=100)
-    year = models.DateField()
+    year = models.CharField(max_length=100,null=True,blank=True)
     genre = models.CharField(max_length=100)
     quantity = models.CharField(max_length=100)
     available = models.BooleanField(default=True)
