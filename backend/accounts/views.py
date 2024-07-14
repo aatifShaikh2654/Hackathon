@@ -168,28 +168,81 @@ def getAllUser(request):
     try:
         token = request.GET.get('token')
         if not token:
-            return JsonResponse({"error": "token not found"})
+            return JsonResponse({"error": "Token not found"}, status=400)
+
+        # Verify the token
         result = verify_token(token)
-        if "error" in result and result["error"]:
-            return JsonResponse({"error": result["error"]})
+        if "error" in result:
+            return JsonResponse({"error": result["error"]}, status=401)
 
-        if "success" in result and result["success"] == True:
+        # Check if the token verification was successful
+        if "success" in result and result["success"]:
             decoded_token = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=["HS256"])
-            try:
-                user = CustomUser.objects.all()
-            except:
-                user = None
-            if user is not None:
-                data = {"email": user.email, "name": user.full_name}
-                return JsonResponse(data)
+
+            # Fetch all users
+            users = CustomUser.objects.all()
+
+            # Check if any users were found
+            if users.exists():
+                # Assuming you want to return data for all users
+                data = []
+                for user in users:
+                    user_data = {"email": user.email, "name": user.full_name}
+                    data.append(user_data)
+                return JsonResponse(data, safe=False)  # safe=False allows serialization of non-dict objects
             else:
-                return JsonResponse({"error": "User not found"})
+                return JsonResponse({"error": "No users found"}, status=404)
         else:
-            return JsonResponse({"error": "Authentication failed"})
+            return JsonResponse({"error": "Authentication failed"}, status=401)
+
+    except jwt.ExpiredSignatureError:
+        return JsonResponse({"error": "Token expired"}, status=401)
+    except jwt.InvalidTokenError:
+        return JsonResponse({"error": "Invalid token"}, status=401)
     except Exception as e:
-        return JsonResponse({"error": f"Something went wrong {str(e)}"})
+        return JsonResponse({"error": f"Something went wrong: {str(e)}"}, status=500)
 
 
+
+@api_view(["GET"])
+def getAllLibrarian(request):
+    try:
+        token = request.GET.get('token')
+        if not token:
+            return JsonResponse({"error": "Token not found"}, status=400)
+
+        # Verify the token
+        result = verify_token(token)
+        if "error" in result:
+            return JsonResponse({"error": result["error"]}, status=401)
+
+        # Check if the token verification was successful
+        if "success" in result and result["success"]:
+            decoded_token = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=["HS256"])
+
+            # Fetch librarian users
+            librarians = CustomUser.objects.filter(USER_ROLE='librarian')
+
+            # Check if any librarian users were found
+            if librarians.exists():
+                # Assuming you want to return data for all librarian users
+                data = []
+                for librarian in librarians:
+                    librarian_data = {"email": librarian.email, "name": librarian.full_name}
+                    data.append(librarian_data)
+                return JsonResponse(data, safe=False)  # safe=False allows serialization of non-dict objects
+            else:
+                return JsonResponse({"error": "No librarian found"}, status=404)
+        else:
+            return JsonResponse({"error": "Authentication failed"}, status=401)
+
+    except jwt.ExpiredSignatureError:
+        return JsonResponse({"error": "Token expired"}, status=401)
+    except jwt.InvalidTokenError:
+        return JsonResponse({"error": "Invalid token"}, status=401)
+    except Exception as e:
+        return JsonResponse({"error": f"Something went wrong: {str(e)}"}, status=500)
+    
 
 @api_view(["GET"])
 def profile(request):
