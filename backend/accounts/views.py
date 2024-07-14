@@ -72,7 +72,8 @@ def signup(request):
                 if user:
                     # Logging in user with password
                     refresh = RefreshToken.for_user(user)
-                    data = {"success": "user created successfully","access": str(refresh.access_token),"refresh": str(refresh)}
+                    serialized_user = CustomUserSerializer(user)
+                    data = {"success": "user created successfully","access": str(refresh.access_token),"user":serialized_user.data}
                     return JsonResponse(data)
                 else:
                     # Authentication failed password is invalid
@@ -155,13 +156,16 @@ def get_user(request):
             except:
                 user = None
             if user is not None:
-                data = {"success":True,"user":{"email": user.email, "name": user.full_name}}
+                print("User",user)
+                serialized_users = CustomUserSerializer(user)
+                data = {"success":True,"user":serialized_users.data}
                 return JsonResponse(data)
             else:
                 return JsonResponse({"error": "User not found"})
         else:
             return JsonResponse({"error": "Authentication failed"})
     except Exception as e:
+        print("Error",str(e))
         return JsonResponse({"error": f"Something went wrong {str(e)}"})
     
 
@@ -177,21 +181,23 @@ def getAllUser(request):
         if "error" in result:
             return JsonResponse({"error": result["error"]}, status=401)
 
-        # Check if the token verification was successful
-        if "success" in result and result["success"]:
-            decoded_token = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=["HS256"])
-
-            # Fetch all users
-            users = CustomUser.objects.all()
-
-            # Check if any users were found
-            if users.exists():
-                # Assuming you want to return data for all users
-                data = []
-                for user in users:
-                    user_data = {"email": user.email, "name": user.full_name}
-                    data.append(user_data)
-                return JsonResponse(data, safe=False)  # safe=False allows serialization of non-dict objects
+        if "success" in result and result["success"] == True:
+            try:
+                decoded_token = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=['HS256'])
+                user_id = decoded_token["user_id"]
+                user = CustomUser.objects.get(id=user_id)
+                if not user.role == "admin" and not user.role == "librarian":
+                    return JsonResponse({"error": "Only admin and librarian roles are allowed"})
+            except Exception as e:
+                data = {"error": "User not found"}
+                return JsonResponse(data)
+            try:
+                users = CustomUser.objects.all()
+            except:
+                users = None
+            if users is not None:
+                serialized_users = CustomUserSerializer(user)
+                return JsonResponse({"success": True, "user": serialized_users.data})
             else:
                 return JsonResponse({"error": "No users found"}, status=404)
         else:
@@ -220,19 +226,24 @@ def getAllLibrarian(request):
 
         # Check if the token verification was successful
         if "success" in result and result["success"]:
-            decoded_token = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=["HS256"])
+            try:
+                decoded_token = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=['HS256'])
+                user_id = decoded_token["user_id"]
+                user = CustomUser.objects.get(id=user_id)
+                if not user.role == "admin" and not user.role == "librarian":
+                    return JsonResponse({"error": "Only admin and librarian roles are allowed"})
+            except Exception as e:
+                data = {"error": "User not found"}
+                return JsonResponse(data)
 
             # Fetch librarian users
-            librarians = CustomUser.objects.filter(USER_ROLE='librarian')
+            librarians = CustomUser.objects.filter(role='librarian')
 
             # Check if any librarian users were found
-            if librarians.exists():
+            if librarians:
                 # Assuming you want to return data for all librarian users
-                data = []
-                for librarian in librarians:
-                    librarian_data = {"email": librarian.email, "name": librarian.full_name}
-                    data.append(librarian_data)
-                return JsonResponse(data, safe=False)  # safe=False allows serialization of non-dict objects
+                serialized_users = CustomUserSerializer(librarians, many=True)
+                return JsonResponse({"success":True, "users":serialized_users.data})  # safe=False allows serialization of non-dict objects
             else:
                 return JsonResponse({"error": "No librarian found"}, status=404)
         else:
@@ -244,16 +255,7 @@ def getAllLibrarian(request):
         return JsonResponse({"error": "Invalid token"}, status=401)
     except Exception as e:
         return JsonResponse({"error": f"Something went wrong: {str(e)}"}, status=500)
-    
-
-@api_view(["GET"])
-def profile(request):
-    get_profile = Address.objects.get()
-    context  = {
-        'get_profile': get_profile
-    }
-    return JsonResponse(context)
-    
+        
 
 # POST - adds a new address : Login Required
 @api_view(["POST"])
@@ -364,12 +366,11 @@ def getAllAddresses(request):
                     user = CustomUser.objects.get(id=token_user_id)
                 except:
                     user = None
-
                 if all_addresses.count() > 0:
                     serialized_obj = serializers.serialize('json',queryset=all_addresses)
                     data = {"success":serialized_obj}
                     if user:
-                        data["name"] = user.username
+                        data["name"] = user.full_name
                         data["email"] = user.email
                         data["phone_number"] = user.phone_number
                 else:
@@ -403,11 +404,8 @@ def profile(request):
         if user is None:
             data = {"error":"User not found"}
             return JsonResponse(data, safe=False)
-        data = {
-            "phone_number": str(user.phone_number),
-            "email": str(user.email),
-            "username": str(user.username),
-        }
+        serialized_user = CustomUserSerializer(user)
+        data = {"success": True, "user":serialized_user.data}
         return JsonResponse(data, safe=False)
     return JsonResponse({"error":"Authentication failed"}, safe=False)
 
@@ -431,7 +429,7 @@ def updateProfile(request):
                 data = {"error":"User not found"}
                 return JsonResponse(data, safe=False)
             if data.get("email") != None or data.get("email") != "null": user.email= data.get("email")
-            if data.get("username") != None or data.get("username") != "null": user.username = data.get("username")
+            if data.get("full_name") != None or data.get("full_name") != "null": user.full_name = data.get("full_name")
             user.save()
             data = {"success":"Profile updated successfully"}
         return JsonResponse(data, safe=False)

@@ -15,7 +15,7 @@ const Navbar = () => {
         }
     }, [])
 
-
+    console.log(user);
     const handleLogout = () => {
         localStorage.removeItem("token")
         navigate('/')
@@ -30,7 +30,8 @@ const Navbar = () => {
                     <h2>Public Library</h2>
                 </Link>
                 <div className={styles.links}>
-                    {token ? <Link className='button border' onClick={handleLogout}>Logout</Link> : <Link className='button' to="/login">Login</Link>}
+                    {token ? <Link className='button border' to="/profile">Profile</Link> : null}
+                    {token ? <Link className='button border ms-2' onClick={handleLogout}>Logout</Link> : <Link className='button' to="/login">Login</Link>}
                 </div>
             </nav>
         </header>
