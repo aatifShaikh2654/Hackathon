@@ -3,6 +3,7 @@ import styles from '../styles/card.module.css'
 import StateContext from '../context/state/StateContext'
 import axios from 'axios'
 import { toast } from 'react-toastify'
+import { Link } from 'react-router-dom'
 
 function Card({ data, setUpdate, profile }) {
 
@@ -52,6 +53,7 @@ function Card({ data, setUpdate, profile }) {
                     <p>{data.author} - {data.year}</p>
                     <p>{data.description}</p>
                     <p>Genre - {data.genre}</p>
+                    <Link to='/checkout' onClick={handleSubmit} className='button mt-4 me-0' style={{ fontSize: "1rem", padding: "5px 20px" }}>Checkout</Link>
                     {profile ?
                         <div>
                             <button onClick={() => { setUpdateBook({ open: true, isbn: data.isbn }) }} className='button border mt-1 me-0' style={{ fontSize: "1rem", padding: "5px 20px" }}> update</button>

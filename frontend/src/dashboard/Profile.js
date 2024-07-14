@@ -7,6 +7,7 @@ import EditProfile from '../components/EditProfile';
 import Addbook from '../components/Addbook';
 import StateContext from '../context/state/StateContext';
 import UpdateBook from '../components/UpdateBook';
+import { useNavigate } from 'react-router-dom';
 
 function Profile() {
 
@@ -14,12 +15,14 @@ function Profile() {
     const { books, updateBook, setUpdateBook } = useContext(StateContext)
     const [editProfile, setEditProfile] = useState(false);
     const [addBook, setAddBook] = useState(false);
-    
+    const navigate = useNavigate();
 
     useEffect(() => {
         const token = localStorage.getItem("token")
         if (token) {    
             getBooks();   
+        } else {
+            navigate('/')
         }
     }, [])
 
