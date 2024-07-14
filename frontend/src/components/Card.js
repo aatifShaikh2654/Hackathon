@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom'
 
 function Card({ data, setUpdate, profile }) {
 
-    const { setUpdateBook, setLoading, setBooks  } = useContext(StateContext)
+    const { setUpdateBook, setLoading, setBooks } = useContext(StateContext)
 
     const handleSubmit = async (e) => {
         const token = localStorage.getItem("token")
@@ -53,13 +53,15 @@ function Card({ data, setUpdate, profile }) {
                     <p>{data.author} - {data.year}</p>
                     <p>{data.description}</p>
                     <p>Genre - {data.genre}</p>
-                    <Link to='/checkout' onClick={handleSubmit} className='button mt-4 me-0' style={{ fontSize: "1rem", padding: "5px 20px" }}>Checkout</Link>
-                    {profile ?
-                        <div>
-                            <button onClick={() => { setUpdateBook({ open: true, isbn: data.isbn }) }} className='button border mt-1 me-0' style={{ fontSize: "1rem", padding: "5px 20px" }}> update</button>
-                            <button onClick={handleSubmit} className='button mt-1 me-0' style={{ fontSize: "1rem", padding: "5px 20px" }}>Delete</button>
-                        </div>
-                        : null}
+                    <div className="d-flex align-items-center">
+                        <Link to='/checkout' onClick={handleSubmit} className='button mt-0 me-0' style={{ fontSize: "1rem", padding: "5px 20px" }}>Checkout</Link>
+                        {profile ?
+                            <div>
+                                <button onClick={() => { setUpdateBook({ open: true, isbn: data.isbn }) }} className='button border mb-3 me-0' style={{ fontSize: "1rem", padding: "5px 20px" }}> update</button>
+                                <button onClick={handleSubmit} className='button mb-3 me-0' style={{ fontSize: "1rem", padding: "5px 20px" }}>Delete</button>
+                            </div>
+                            : null}
+                    </div>
                 </div>
             </div>
         </>

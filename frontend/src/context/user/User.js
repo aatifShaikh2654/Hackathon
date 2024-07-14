@@ -36,16 +36,16 @@ const User = (props) => {
     };
 
     const [authenticated, setAuthenticated] = useState(false)
+
     const checkUserIsAuthenticated = async () => {
+        const token = localStorage.getItem('token')
         if (!token) {
             return false;
         }
-        const data = await fetch("http://127.0.0.1:8000/" + "api/token/verify/", {
-            method: 'POST',
-            body: JSON.stringify({ "token": token }),
-            headers: { "Content-Type": "application/json", "token": `${token}` }
+        const data = await axios.post("http://127.0.0.1:8000/" + "api/token/verify/", { token: token }, {
+            headers: { "Content-Type": "application/json" }
         })
-        const result = await data.text();
+        const result = data.data;
         if (result) {
             setAuthenticated(true)
             return true;

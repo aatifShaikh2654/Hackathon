@@ -11,15 +11,14 @@ import { useNavigate } from 'react-router-dom';
 
 function Profile() {
 
-    const { user, getBooks } = useContext(UserContext);
+    const { user, getBooks, checkUserIsAuthenticated } = useContext(UserContext);
     const { books, updateBook, setUpdateBook } = useContext(StateContext)
     const [editProfile, setEditProfile] = useState(false);
     const [addBook, setAddBook] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
-        const token = localStorage.getItem("token")
-        if (token) {    
+        if (checkUserIsAuthenticated()) {    
             getBooks();   
         } else {
             navigate('/')

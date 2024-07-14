@@ -11,8 +11,13 @@ const Navbar = () => {
 
     useEffect(() => {
         if (token) {
-            getUser();
+            if (checkUserIsAuthenticated()) {
+                getUser();
+            } else {
+                navigate('/')
+            }
         }
+
     }, [])
 
     const handleLogout = () => {
@@ -20,22 +25,22 @@ const Navbar = () => {
         navigate('/')
     }
 
-  return (
-    <>
-        <header className='container'>
-            <nav className={styles.navbar}>
-                <Link to="/" className={styles.logo}>
-                    <img src="/images/book.webp" className='img-fluid' alt="" />
-                    <h2>Public Library</h2>
-                </Link>
-                <div className={styles.links}>
-                    {user.verified ? <Link className='button border' to="/profile">Profile</Link> : null}
-                    {token ? <Link className='button border ms-2' onClick={handleLogout}>Logout</Link> : <Link className='button' to="/login">Login</Link>}
-                </div>
-            </nav>
-        </header>
-    </>
-  )
+    return (
+        <>
+            <header className='container'>
+                <nav className={styles.navbar}>
+                    <Link to="/" className={styles.logo}>
+                        <img src="/images/book.webp" className='img-fluid' alt="" />
+                        <h2>Public Library</h2>
+                    </Link>
+                    <div className={styles.links}>
+                        {user.verified ? <Link className='button border' to="/profile">Profile</Link> : null}
+                        {token ? <Link className='button border ms-2' onClick={handleLogout}>Logout</Link> : <Link className='button' to="/login">Login</Link>}
+                    </div>
+                </nav>
+            </header>
+        </>
+    )
 }
 
 export default Navbar
