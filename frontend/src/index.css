@@ -1,9 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Handlee&family=Patrick+Hand&display=swap');
 
 :root {
   --black: #000;
   --white: #fff;
-  --accent: #048aff
+  --accent: #E54B4B;
+  --accent2: blue;
 }
 
 
@@ -11,108 +12,20 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Poppins", sans-serif;
+  font-family: "Patrick Hand", cursive;
 }
 
 
 body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--white) !important;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
-}
-
-
-
-.loading {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  height: 100%;
-  width: 100%;
-  z-index: 99999999;
-}
-
-.back-drop {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #000;
-  opacity: .4;
-  z-index: 1;
-}
-
-.loading span {
-  letter-spacing: 1px;
-  font-size: 1vw;
-  margin-top: 10px;
-  color: #eee !important;
-}
-
-.loading-content {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-  z-index: 9;
-}
-
-.loading-svg {
-  width: 3.5em;
-  transform-origin: center;
-  animation: rotate4 2s linear infinite;
-}
-
-circle {
-  fill: none;
-  stroke: var(--accent);
-  stroke-width: 2;
-  stroke-dasharray: 1, 200;
-  stroke-dashoffset: 0;
-  stroke-linecap: round;
-  animation: dash4 1.5s ease-in-out infinite;
-}
-
-@keyframes rotate4 {
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes dash4 {
-  0% {
-    stroke-dasharray: 1, 200;
-    stroke-dashoffset: 0;
-  }
-
-  50% {
-    stroke-dasharray: 90, 200;
-    stroke-dashoffset: -35px;
-  }
-
-  100% {
-    stroke-dashoffset: -125px;
-  }
-}
-
-@media (max-width: 1199px) {
-  .loading span {
-    font-size: .9rem;
-  }
+.button{
+  border: 1px solid var(--accent);
+  background-color: #FFC9C9;
+  color: var(--accent);
+  padding: 10px 30px;
+  line-height: 100%;
+  border-radius: 10px;
+  font-size: 20px;
 }
