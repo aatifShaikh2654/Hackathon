@@ -6,6 +6,7 @@ import Login from './components/Login';
 import Navbar from './components/Navbar';
 import Profile from './dashboard/Profile';
 import {ToastContainer} from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
 

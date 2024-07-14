@@ -4,12 +4,15 @@ import './index.css';
 import './global.css';
 import App from './App';
 import State from './context/state/State';
+import User from './context/user/User';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <State>
-      <App />
+      <User>
+        <App />
+      </User>
     </State>
   </React.StrictMode>
 );

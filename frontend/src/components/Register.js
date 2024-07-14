@@ -1,11 +1,13 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import styles from '../styles/register.module.css'
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios'
 import { toast } from 'react-toastify';
+import StateContext from '../context/state/StateContext';
 
 const Register = () => {
 
+    const { setLoading } = useContext(StateContext);
     const [formData, setFormData] = useState({ full_name: "", email: "", password: "" });
     const [drop, setDrop] = useState(false);
     const [error, setError] = useState('');
@@ -26,8 +28,9 @@ const Register = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post(process.env.REACT_APP_API_URL + "api/auth/createUser",
-                { role: select, name: formData.name, email: formData.email, password: formData.password },
+            setLoading({ open: true, text: 'Creating...' })
+            const response = await axios.post("http://127.0.0.1:8000/" + "api/signup/",
+                { role: select, full_name: formData.full_name, email: formData.email, password: formData.password },
                 {
                     headers: {
                         'Content-type': "application/json"
@@ -38,7 +41,11 @@ const Register = () => {
             console.log(json);
             if (json.success) {
                 console.log("Successfully Created");
-                toast.success('Successfully Logged in')
+                navigate('/')
+                toast.success(json.success)
+                if (json.access) {
+                    localStorage.setItem("token", json.access)
+                }
             } else {
                 console.log(json.error);
                 setError(json.message || json.message[0].msg)
@@ -50,6 +57,8 @@ const Register = () => {
             console.log(error);
             setError(error.response.data.message || error.response.data.message[0].msg)
             console.log("Some Thing Went wrong");
+        } finally{
+            setLoading({ open: false, text: '' })
         }
     }
 
@@ -59,7 +68,7 @@ const Register = () => {
         <>
             <div className="container mt-5">
                 <div className={styles.formContainer}>
-                    <form action="">
+                    <form action="" onSubmit={handleSubmit}>
                         <div className="row">
                             <div className="col-12">
                                 <div className={styles.title}>
@@ -93,8 +102,9 @@ const Register = () => {
                                         <span>Password</span>
                                         <input type="password" className='input' onChange={handleChange} name='password' placeholder='' />
                                     </div>
+                                    {error ? <p style={{color: "red", padding: "0px 10px"}}>{error}</p> : null}
                                     <div className={styles.button1}>
-                                        <button type="button" class="button border">Register</button>
+                                        <button type="submit" class="button border">Register</button>
                                     </div>
                                 </div>
                             </div>

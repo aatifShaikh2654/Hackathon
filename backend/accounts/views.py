@@ -24,6 +24,7 @@ def verify_token(token):
         headers = {"Authorization": f"Bearer {token}"}
         body = {"token":token}
         result = requests.post(url, headers=headers, data=body)
+        print(result)
         if result.status_code == 200:
             return {"success":True}
         else:
@@ -98,6 +99,8 @@ def login(request):
             user = authenticate(email=email, password=password)
             # Checking password
             if user:
+                if user.role == "librarian" and not user.verified:
+                    return JsonResponse({"error":"Please verify before continuing"})
                 try:
                     ip_address = request.META.get('HTTP_X_FORWARDED_FOR')
                     if ip_address:
@@ -150,6 +153,33 @@ def get_user(request):
             except:
                 user = None
             if user is not None:
+                data = {"success":True,"user":{"email": user.email, "name": user.full_name}}
+                return JsonResponse(data)
+            else:
+                return JsonResponse({"error": "User not found"})
+        else:
+            return JsonResponse({"error": "Authentication failed"})
+    except Exception as e:
+        return JsonResponse({"error": f"Something went wrong {str(e)}"})
+    
+
+@api_view(["GET"])
+def getAllUser(request):
+    try:
+        token = request.GET.get('token')
+        if not token:
+            return JsonResponse({"error": "token not found"})
+        result = verify_token(token)
+        if "error" in result and result["error"]:
+            return JsonResponse({"error": result["error"]})
+
+        if "success" in result and result["success"] == True:
+            decoded_token = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=["HS256"])
+            try:
+                user = CustomUser.objects.all()
+            except:
+                user = None
+            if user is not None:
                 data = {"email": user.email, "name": user.full_name}
                 return JsonResponse(data)
             else:
@@ -158,6 +188,8 @@ def get_user(request):
             return JsonResponse({"error": "Authentication failed"})
     except Exception as e:
         return JsonResponse({"error": f"Something went wrong {str(e)}"})
+
+
 
 @api_view(["GET"])
 def profile(request):
@@ -294,4 +326,88 @@ def getAllAddresses(request):
         else:
             data = {"error":"Authentication Failed"}
             return JsonResponse(data)
+
+
+@api_view(["GET"])        
+def profile(request):
+    token = request.GET.get('token')
+    if not token:
+            return JsonResponse({"error": "Invalid token"})
+    result = verify_token(token)
+    if "error" in result and result["error"]:
+        return JsonResponse({"error": result["error"]})
+    
+    if "success" in result and result["success"] == True:
+        decoded_token = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=['HS256'])
+        user_id = decoded_token["user_id"]
+        data = None
+        try:
+            user = CustomUser.objects.get(id=user_id)
+        except:
+            user = None
+        if user is None:
+            data = {"error":"User not found"}
+            return JsonResponse(data, safe=False)
+        data = {
+            "phone_number": str(user.phone_number),
+            "email": str(user.email),
+            "username": str(user.username),
+        }
+        return JsonResponse(data, safe=False)
+    return JsonResponse({"error":"Authentication failed"}, safe=False)
+
+@api_view(["POST"])        
+def updateProfile(request):
+    token = request.query_params.get('token')
+    data = json.loads(request.body)
+    if token:
+        decoded_token = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=['HS256'])
+        url = BASE_URL + "api/token/verify/"
+        headers = {"Authorization":f"bearer {token}"}
+        body = {"token":token}
+        result = requests.post(url, headers=headers,data=body)
+        if result.status_code == 200:
+            user_id = decoded_token["user_id"]
+            try:
+                user = CustomUser.objects.get(id=user_id)
+            except:
+                user = None
+            if user is None:
+                data = {"error":"User not found"}
+                return JsonResponse(data, safe=False)
+            if data.get("email") != None or data.get("email") != "null": user.email= data.get("email")
+            if data.get("username") != None or data.get("username") != "null": user.username = data.get("username")
+            user.save()
+            data = {"success":"Profile updated successfully"}
+        return JsonResponse(data, safe=False)
+    return JsonResponse("DATA", safe=False)
+
+# GET - Check if user is Authenticated - returns success:True if user is authenticated
+@api_view(["GET"])
+def checkUserIsSuperUser(request):
+    try:
+        token = request.GET.get("token")
+        if not token:
+            return JsonResponse({"error": "Invalid token"})
+        result = verify_token(token)
+        if "error" in result and result["error"]:
+            return JsonResponse({"error": result["error"]})
+
+        if "success" in result and result["success"] == True:
+            decoded_token = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=['HS256'])
+            user_id = decoded_token["user_id"]
+            try:
+                user = CustomUser.objects.get(id=user_id)
+                if user.is_superuser:
+                    return JsonResponse({"success": True})
+                else:
+                    return JsonResponse({"error":"Authentication failed"})
+            except:
+                user = None
+                return JsonResponse({"error":"Authentication failed"})
+        else:
+            return JsonResponse({"error":"Authentication failed"})
+    except Exception as e:
+        print("error: " + str(e))
+        return JsonResponse({"error":str(e)})
 

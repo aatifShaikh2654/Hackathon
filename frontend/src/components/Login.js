@@ -22,7 +22,7 @@ const Login = () => {
         e.preventDefault();
         try {
             setLoading({ open: true, text: 'Verifying...' })
-            const response = await axios.post(process.env.REACT_APP_API_URL + "api/auth/login", formData, {
+            const response = await axios.post("http://127.0.0.1:8000/" + "api/auth/login", formData, {
                 headers: {
                     'Content-type': "application/json"
                 },
@@ -32,9 +32,9 @@ const Login = () => {
             console.log(json)
             if (json.success) {
                 if (json.user.verified == true) {
+                    toast.success(json.success)
                     localStorage.setItem("token", json.authtoken)
-                    navigate('/dashboard')
-                    toast.success("Login Successfully")
+                    navigate('/')
                 } else {
                     toast.error("You are not Verified")
                 }
@@ -69,14 +69,14 @@ const Login = () => {
                                 <div className={styles.forms}>
                                     <div className={styles.input_field2}>
                                         <span>Email</span>
-                                        <input type="email" className='input' name='email' placeholder='' />
+                                        <input type="email" className='input' onChange={handleChange} name='email' placeholder='' />
                                     </div>
                                     <div className={styles.input_field2}>
                                         <span>Password</span>
-                                        <input type="password" className='input' name='password' placeholder='' />
+                                        <input type="password" className='input' onChange={handleChange} name='password' placeholder='' />
                                     </div>
                                     <div className={styles.button1}>
-                                        <button type="button" class="button border">Login</button>
+                                        <button type="submit" class="button border">Login</button>
                                     </div>
                                     <div className={styles.google}>
                                         <Link to="/register">Don't have an account, Register</Link>
