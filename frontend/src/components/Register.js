@@ -85,8 +85,8 @@ const Register = () => {
                                                 </div>
                                                 <i className="fa-solid fa-angle-up"></i></div>
                                             <ul>
-                                                <li onClick={() => { selectDrop('User') }}>User</li>
-                                                <li onClick={() => { selectDrop('Librarian') }}>Librarian</li>
+                                                <li onClick={() => { selectDrop('user') }}>User</li>
+                                                <li onClick={() => { selectDrop('librarian') }}>Librarian</li>
                                             </ul>
                                         </div>
                                     </div>
