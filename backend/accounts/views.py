@@ -208,7 +208,7 @@ def getAllUser(request):
     except jwt.InvalidTokenError:
         return JsonResponse({"error": "Invalid token"}, status=401)
     except Exception as e:
-        return JsonResponse({"error": f"Something went wrong: {str(e)}"}, status=500)
+        return JsonResponse({"error": f"Something went wrong: {str(e)}"}, status=500)   
 
 
 

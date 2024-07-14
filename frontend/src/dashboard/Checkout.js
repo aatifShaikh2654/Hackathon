@@ -26,8 +26,6 @@ function Checkout() {
                                     <span>Phone no*</span>
                                     <input type="number" className='input' placeholder='' />
                                 </div>
-                                
-                               
                             </div>
 
                             <div className={styles.customer}>
