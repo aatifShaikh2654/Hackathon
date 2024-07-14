@@ -1,0 +1,31 @@
+.dashboard{
+    margin-top: 20px;
+    /* width: 50vw; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.search h1{
+    font-size: 2.5rem;
+    text-align: center;
+}
+.searchbox{
+    width: 800px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.searchbox input{
+    width: 100%;
+    padding: 10px;
+    outline: none;
+    border-radius: 10px;
+    border: 1px solid var(--black);
+}
+
+
+@media(max-width:890px){
+    .search h1{
+        
+    }
+}

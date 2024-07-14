@@ -25,10 +25,9 @@ const Register = () => {
                     <span>Password</span>
                     <input type="password" className='input' name='password' placeholder='' />
                   </div>
-                  <div className={styles.button1}>
-                    <button type="button" class="btn btn-primary">Register</button>
-                  </div>
-                  
+                  <div>
+                    <button type="button" class="button">Register</button>
+                  </div> 
                 </div>
               </div>
             </div>
