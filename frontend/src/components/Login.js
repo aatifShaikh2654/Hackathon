@@ -4,11 +4,13 @@ import { Link, useNavigate } from 'react-router-dom'
 import StateContext from '../context/state/StateContext'
 import axios from 'axios'
 import { toast } from 'react-toastify'
+import UserContext from '../context/user/UserContext'
 
 
 const Login = () => {
 
     const { setLoading } = useContext(StateContext);
+    const { setUser } = useContext(UserContext)
     const [formData, setFormData] = useState({ email: "", password: "" });
     const [error, setError] = useState('');
     const navigate = useNavigate();
@@ -32,7 +34,8 @@ const Login = () => {
             console.log(json)
             if (json.success) {
                 if (json.user.verified == true) {
-                    toast.success(json.success)
+                    toast.success("Successfully Logged in")
+                    setUser(json.user)
                     localStorage.setItem("token", json.access)
                     navigate('/')
                 } else {

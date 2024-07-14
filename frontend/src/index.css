@@ -21,13 +21,19 @@ body {
 }
 
 .button{
-  border: 1px solid var(--accent);
+  border: 2px solid var(--accent);
   background-color: #FFC9C9;
   color: var(--accent);
   padding: 5px 30px;
   border-radius: 10px;
+  transition: all .5s ease;
   font-size: 20px;
   text-decoration: none;
+}
+
+.button:hover{
+  background: transparent;
+  color: var(--accent);
 }
 
 .button.border{

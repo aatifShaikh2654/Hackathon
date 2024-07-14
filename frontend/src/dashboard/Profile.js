@@ -1,8 +1,13 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import styles from '../styles/profile.module.css'
 import Card from '../components/Card'
+import UserContext from '../context/user/UserContext'
 
 function Profile() {
+
+    const { user } = useContext(UserContext);
+
+
     return (
         <>
             <div className="container">
@@ -34,8 +39,8 @@ function Profile() {
                                         <img src="images/book.webp" alt="" />
                                     </div>
                                     <div>
-                                        <h3 className={styles.prof}>Anas Mirza</h3>
-                                        <p className={styles.prof}>You Department</p>
+                                        <h3 className={styles.prof}>{user.full_name}</h3>
+                                        <p className={styles.prof}>{user.role == "User" ? '' : user.role}</p>
                                     </div>
                                 </div>
                                 <div className={styles.location}>
@@ -44,11 +49,11 @@ function Profile() {
                                 </div>
                                 <div className={styles.location}>
                                     <i class="fa-solid fa-phone"></i>
-                                    <p>+91 98522 XXXXX</p>
+                                    <p>+91 {user.phone}</p>
                                 </div>
                                 <div className={styles.location}>
                                     <i class="fa-solid fa-envelope"></i>
-                                    <p>user@gmail.com</p>
+                                    <p>{user.email}</p>
                                 </div>
                                 <div className={styles.edit}>
                                     <a href="#"><i class="fa-solid fa-pen"></i> Edit Information</a>
