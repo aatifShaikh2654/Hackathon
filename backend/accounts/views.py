@@ -156,7 +156,8 @@ def get_user(request):
             except:
                 user = None
             if user is not None:
-                data = {"success":True,"user":{"email": user.email, "name": user.full_name}}
+                serialized_users = CustomUserSerializer(user)
+                data = {"success":True,"user":{serialized_users.data}}
                 return JsonResponse(data)
             else:
                 return JsonResponse({"error": "User not found"})
@@ -189,12 +190,12 @@ def getAllUser(request):
                 data = {"error": "User not found"}
                 return JsonResponse(data)
             try:
-                user = CustomUser.objects.all()
+                users = CustomUser.objects.all()
             except:
-                user = None
-            if user is not None:
-                data = {"email": user.email, "name": user.full_name}
-                return JsonResponse(data)
+                users = None
+            if users is not None:
+                serialized_users = CustomUserSerializer(user)
+                return JsonResponse({"success": True, "user": serialized_users.data})
             else:
                 return JsonResponse({"error": "No users found"}, status=404)
         else:
@@ -223,19 +224,24 @@ def getAllLibrarian(request):
 
         # Check if the token verification was successful
         if "success" in result and result["success"]:
-            decoded_token = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=["HS256"])
+            try:
+                decoded_token = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=['HS256'])
+                user_id = decoded_token["user_id"]
+                user = CustomUser.objects.get(id=user_id)
+                if not user.role == "admin" and not user.role == "librarian":
+                    return JsonResponse({"error": "Only admin and librarian roles are allowed"})
+            except Exception as e:
+                data = {"error": "User not found"}
+                return JsonResponse(data)
 
             # Fetch librarian users
-            librarians = CustomUser.objects.filter(USER_ROLE='librarian')
+            librarians = CustomUser.objects.filter(role='librarian')
 
             # Check if any librarian users were found
-            if librarians.exists():
+            if librarians:
                 # Assuming you want to return data for all librarian users
-                data = []
-                for librarian in librarians:
-                    librarian_data = {"email": librarian.email, "name": librarian.full_name}
-                    data.append(librarian_data)
-                return JsonResponse(data, safe=False)  # safe=False allows serialization of non-dict objects
+                serialized_users = CustomUserSerializer(librarians, many=True)
+                return JsonResponse({"success":True, "users":serialized_users.data})  # safe=False allows serialization of non-dict objects
             else:
                 return JsonResponse({"error": "No librarian found"}, status=404)
         else:
@@ -247,16 +253,7 @@ def getAllLibrarian(request):
         return JsonResponse({"error": "Invalid token"}, status=401)
     except Exception as e:
         return JsonResponse({"error": f"Something went wrong: {str(e)}"}, status=500)
-    
-
-@api_view(["GET"])
-def profile(request):
-    get_profile = Address.objects.get()
-    context  = {
-        'get_profile': get_profile
-    }
-    return JsonResponse(context)
-    
+        
 
 # POST - adds a new address : Login Required
 @api_view(["POST"])
