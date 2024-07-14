@@ -4,6 +4,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    margin-bottom: 50px;
     /* padding: 0px 20px; */
 }
 .formContainer form{
@@ -59,6 +60,84 @@ button{
     font-weight: 500;
     margin-left: 10px;
 }
+
+
+.dropdown {
+    position: relative;
+}
+
+.dropdown .select {
+    width: 100%;
+    padding: 10px 15px;
+    border-radius: 10px;
+    background-color: var(--white);
+    color: var(--black);
+    border: 1px solid var(--black) !important;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    z-index: 99;
+    cursor: pointer;
+    font-weight: 500;
+    color: var(--black);
+    font-size: 1rem;
+    border: 1px solid var(--white);
+}
+
+.dropdown.active .select {
+    border: 1px solid var(--accent);
+}
+
+.dropdown .select i {
+    color: var(--black);
+    transition: all .5s ease;
+}
+
+.dropdown.active .select i:last-child {
+    transform: rotate(180deg);
+}
+
+.dropdown ul {
+    position: absolute;
+    width: 100%;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 12px;
+    background-color: #fff;
+    border: 1px solid var(--black) !important;
+    color: var(--black);
+    padding-left: 0px;
+    z-index: 1;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all .5s ease;
+}
+
+
+.dropdown.active ul {
+    top: 0;
+    height: 140px;
+}
+
+.dropdown ul li:first-child {
+    padding-top: 60px !important;
+}
+
+.dropdown ul li {
+    list-style-type: none;
+    padding: 10px 30px;
+    border-bottom: 1px solid var(--black);
+    transition: all .5s ease;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.dropdown ul li:hover {
+    background-color: #eee;
+}
+
 @media(max-width:999px){
     .title h1{
         font-size: 3.2rem;

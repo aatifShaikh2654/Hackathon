@@ -5,6 +5,7 @@ import Register from './components/Register'
 import Login from './components/Login';
 import Navbar from './components/Navbar';
 import Profile from './dashboard/Profile';
+import {ToastContainer} from 'react-toastify'
 
 function App() {
 
@@ -21,6 +22,7 @@ function App() {
   return (
     <>
       <Router>
+        <ToastContainer />
         <Navbar />
         <Routes>
           <Route path='/' element={<Dashboard />} />

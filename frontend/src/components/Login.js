@@ -1,9 +1,61 @@
-import React from 'react'
+import React, { useContext, useState } from 'react'
 import styles from '../styles/register.module.css'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import StateContext from '../context/state/StateContext'
+import axios from 'axios'
+import { toast } from 'react-toastify'
 
 
 const Login = () => {
+
+    const { setLoading } = useContext(StateContext);
+    const [formData, setFormData] = useState({ email: "", password: "" });
+    const [error, setError] = useState('');
+    const navigate = useNavigate();
+
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value })
+        setError('')
+    }
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            setLoading({ open: true, text: 'Verifying...' })
+            const response = await axios.post(process.env.REACT_APP_API_URL + "api/auth/login", formData, {
+                headers: {
+                    'Content-type': "application/json"
+                },
+            })
+
+            const json = response.data;
+            console.log(json)
+            if (json.success) {
+                if (json.user.verified == true) {
+                    localStorage.setItem("token", json.authtoken)
+                    navigate('/dashboard')
+                    toast.success("Login Successfully")
+                } else {
+                    toast.error("You are not Verified")
+                }
+            } else {
+                console.log(json);
+                setError(json.message || json.message[0].msg)
+                console.log(json.error);
+            }
+
+
+        } catch (error) {
+            console.log(error);
+            setError(error.response.data.message || error.response.data.message[0].msg)
+            console.log("Some Thing Went wrong");
+        } finally {
+            setLoading({ open: false, text: '' })
+        }
+    }
+
+
+
     return (
         <>
             <div className="container mt-5">
@@ -27,8 +79,7 @@ const Login = () => {
                                         <button type="button" class="button border">Login</button>
                                     </div>
                                     <div className={styles.google}>
-                                        <p>Singup using Google</p>
-                                        <Link to="/register">Signup using email address</Link>
+                                        <Link to="/register">Don't have an account, Register</Link>
                                     </div>
                                 </div>
                             </div>
