@@ -44,3 +44,17 @@
     padding-left: 15px;
     margin-bottom: 0;
 }
+.location{
+    display:flex;
+    /* justify-content: center; */
+    align-items: center;
+    font-size: 1.3rem;
+    margin-top: .1rem;
+}
+.location p{
+    padding-left: 10px;
+}
+.edit{
+    margin-top: 20px;
+    font-size: 1.2rem;
+}

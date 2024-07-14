@@ -42,17 +42,34 @@ function Profile() {
                                     <i class="fa-solid fa-location-dot"></i>
                                     <p>389,Shahpur,Ahmedabad-380001</p>
                                 </div>
-                                <div className={styles.phone}>
-                                    <i class="fa-solid fa-location-dot"></i>
+                                <div className={styles.location}>
+                                    <i class="fa-solid fa-phone"></i>
                                     <p>+91 98522 XXXXX</p>
                                 </div>
-                                <div className={styles.email}>
-                                    <i class="fa-solid fa-location-dot"></i>
+                                <div className={styles.location}>
+                                    <i class="fa-solid fa-envelope"></i>
                                     <p>user@gmail.com</p>
                                 </div>
-                                <a href="#"><i class="fa-solid fa-pen"></i> Edit Information</a>
-
+                                <div className={styles.edit}>
+                                    <a href="#"><i class="fa-solid fa-pen"></i> Edit Information</a>
+                                </div>
                             </div>
+                            <hr />
+                            <h1>Your Contact</h1>
+                            <hr />
+                            <h3>Aatif Admin</h3>
+                            <div className={styles.location}>
+                                    <i class="fa-solid fa-location-dot"></i>
+                                    <p>389,Shahpur,Ahmedabad-380001</p>
+                                </div>
+                                <div className={styles.location}>
+                                    <i class="fa-solid fa-phone"></i>
+                                    <p>+91 98522 XXXXX</p>
+                                </div>
+                                <div className={styles.location}>
+                                    <i class="fa-solid fa-envelope"></i>
+                                    <p>admin@gmail.com</p>
+                                </div>
                         </div>
                     </div>
                 </div>
