@@ -20,12 +20,11 @@ function App() {
   return (
     <>
       <Router>
-      <Navbar />
+        <Navbar />
         <Routes>
-          <Route path='/' element={<Register />} />
-          <Route path='/login' element={<Login/>} />
-          <Route exact path="/dashboard" element={<Dashboard />}>
-          </Route>
+          <Route path='/' element={<Dashboard />} />
+          <Route path='/login' element={<Login />} />
+          <Route path='/register' element={<Register />} />
         </Routes>
       </Router>
     </>
