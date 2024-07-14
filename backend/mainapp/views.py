@@ -9,6 +9,7 @@ from datetime import datetime
 from .utils import verify_token
 from django.conf import settings
 import jwt
+from django.core.mail import EmailMessage
 from accounts.models import CustomUser
 
 
@@ -81,6 +82,15 @@ class Books(generics.RetrieveUpdateDestroyAPIView):
                 
                 book = Book.objects.create(isbn=isbn, title=title,author=author, publisher=publisher, year=year, genre=genre, quantity=quantity, available=available if available is not None else True, new_arrival=new_arrival if new_arrival is not None or not new_arrival == "" else False, trending= trending if trending is not None or not trending == "" else False)
                 serializer = BookSerializer(book)
+                email = EmailMessage(
+                'New Books Arrival',
+                'New Books Are Arrived Check it out',              
+                settings.DEFAULT_FROM_EMAIL,
+                ['uveshpathan665@gmail.com'],
+                )
+                # email.attach('form_submission.pdf', pdf_buffer.getvalue(), 'application/pdf')
+                email.send()
+
                 return JsonResponse({"success": True, "book": serializer.data})
             else:
                 return JsonResponse({"error": False, "message": "Please login to Add book"})
