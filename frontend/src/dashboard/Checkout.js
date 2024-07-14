@@ -14,10 +14,10 @@ function Checkout() {
                                     <h5>Customer Info</h5>
                                     <b>Required*</b>
                                 </div>
-                                <div className={styles.details}>
+                                {/* <div className={styles.details}>
                                     <span>Full Name*</span>
                                     <input type="text" className='input' placeholder='' />
-                                </div>
+                                </div> */}
                                 <div className={styles.details}>
                                     <span>Email*</span>
                                     <input type="text" className='input' placeholder='' />
@@ -28,12 +28,12 @@ function Checkout() {
                                 </div>
                             </div>
 
-                            <div className={styles.customer}>
+                            {/* <div className={styles.customer}>
                                 <div className={styles.head}>
                                     <h5>Address</h5>
                                     <b>Required*</b>
                                 </div>
-                                
+
                                 <div className={styles.details}>
                                     <span>Street Address*</span>
                                     <input type="text" className='input' placeholder='' />
@@ -54,7 +54,7 @@ function Checkout() {
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </div> */}
 
                             <div className={styles.customer}>
                                 <div className={styles.head}>
@@ -63,26 +63,18 @@ function Checkout() {
                                 </div>
 
                                 <div className={styles.details}>
-                                    <div className="row">
-                                        <div className="col-lg-6">
-                                            <span>From *</span>
-                                            <input type="date" className='input' placeholder='' />
-                                        </div>
-                                        <div className="col-lg-6">
-                                            <span>to *</span>
-                                            <input type="date" className='input' placeholder='' />
-                                        </div>
-                                        <div className={styles.details}>
-                                            <span>Quantiy*</span>
-                                            <input type="number" className='input' placeholder='' />
-                                        </div>
-                                    </div>
+                                    <span>to *</span>
+                                    <input type="date" className='input' placeholder='' />
+                                </div>
+                                <div className={styles.details}>
+                                    <span>Quantiy*</span>
+                                    <input type="number" className='input' placeholder='' />
                                 </div>
                             </div>
                         </div>
 
                         <div className="col-lg-4 col-md-6">
-                        <div className={styles.customer}>
+                            <div className={styles.customer}>
                                 <div className={styles.head}>
                                     <h5>Books</h5>
                                     <b>Required*</b>

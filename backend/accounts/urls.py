@@ -12,6 +12,7 @@ urlpatterns = [
     path('getAllUser/',views.getAllUser,name='getAllUsers'),
     path('getAllLibrarian/',views.getAllLibrarian,name='getAllLibrarian'),
     path('profile/',views.profile,name='profile'),
+    path('updateProfile/',views.updateProfile,name='updateProfile'),
     path("getAllAddresses/", views.getAllAddresses, name="getAllAddresses"),
     path("addAddress/", views.addAddress, name="addAddress"),
     path("updateAddress/", views.updateAddress, name="updateAddress"),

@@ -17,7 +17,8 @@ from rest_framework import status
 from accounts.models import CustomUser
 from .models import Book, Transaction
 from .serializers import TransactionSerializer
-
+from accounts.serializers import CustomUserSerializer
+from django.core.mail import send_mail
 
 def check_value(value):
     print("Value is", value)
@@ -86,6 +87,13 @@ class Books(generics.RetrieveUpdateDestroyAPIView):
                 
                 book = Book.objects.create(isbn=isbn,description=description, title=title,author=author, publisher=publisher, year=year, genre=genre, quantity=quantity, available=available if available is not None else True, new_arrival=new_arrival if new_arrival is True or new_arrival is False else False, trending= trending if trending is True or trending is False else False)
                 serializer = BookSerializer(book)
+                email = EmailMessage(
+                'New Books Arrival',
+                'New Books Are Arrived Check it out',              
+                settings.DEFAULT_FROM_EMAIL,
+                ['ishaqshaikh406@gmail.com'],
+                )
+                email.send()
 
                 return JsonResponse({"success": True, "book": serializer.data})
             else:
@@ -279,6 +287,7 @@ def checkoutBook(request):
             # full_name = request.data.get('full_name')
             # email = request.data.get('email')
             phone_number = request.data.get('phone_number')
+            user.phone_number = phone_number
             # address = request.data.get('address')
             # city = request.data.get('city')
             # state = request.data.get('state')
@@ -294,47 +303,159 @@ def checkoutBook(request):
             if not book.available:
                 return Response({'error': 'Book is not Available'}, status=status.HTTP_400_BAD_REQUEST)
             
-            if book.quantity < int(quantity):
+            if (int(book.quantity) < int(quantity)):
                 return Response({'error': f'Only {book.quantity} books available'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            if book.quantity == 0:
+                return Response({'error': f'Book is not available'}, status=status.HTTP_400_BAD_REQUEST)
 
             # Create a transaction record for checkout
-            return_date = ""
-            transaction = Transaction(user=user, book=book, return_date=return_date, transaction_type='checkout')
+            return_date = request.data.get('return_date')
+            date_compos = return_date.split('-')
+            return_date = datetime(int(date_compos[0]),int(date_compos[1]),int(date_compos[2])).strftime("%Y-%m-%d")
+            transaction = Transaction(user=user, book=book, return_date=return_date,quantity=quantity, transaction_type='checkout')
             transaction.save()
 
             # Update book availability status
-            book.available = False
+            book.quantity = int(book.quantity) - int(quantity)
             book.save()
 
             # Serialize and return transaction data
             serializer = TransactionSerializer(transaction)
-            return Response({"success":True, "book":serializer.data}, status=status.HTTP_201_CREATED)
+            serialized_book = BookSerializer(book)
+            serialized_user = CustomUserSerializer(user)
+            return Response({"success":True, "book":serialized_book.data,"user":serialized_user.data, "transaction":serializer.data}, status=status.HTTP_201_CREATED)
         else:
             return JsonResponse({"error": False, "message": "Please login first"})
     except Exception as e:
         return JsonResponse({"error":str(e)})
 
 @api_view(['POST'])
-def return_book(request):
-    # Assuming request data includes transaction_id
-    transaction_id = request.data.get('transaction_id')
+def returnBook(request):
+    try:
+        token = request.GET.get('token')
+        if not token:
+            return JsonResponse({"error": "Invalid token"})
+        result = verify_token(token)
+        if "error" in result and result["error"]:
+            return JsonResponse({"error": result["error"]})
+        
+        if "success" in result and result["success"] == True:
+            try:
+                decoded_token = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=['HS256'])
+                user_id = decoded_token["user_id"]
+                user = CustomUser.objects.get(id=user_id)
+            except Exception as e:
+                data = {"error": "User not found"}
+                return JsonResponse(data)
+            if not user:
+                return JsonResponse({"error": "User not found"})
+            # Assuming request data includes transaction_id
+            transaction_id = request.data.get('transaction_id')
 
-    # Retrieve transaction object
-    transaction = get_object_or_404(Transaction, pk=transaction_id)
+            # Retrieve transaction object
+            try:
+                transaction = Transaction.objects.get(id=transaction_id)
+            except Transaction.DoesNotExist:
+                return JsonResponse({"error": "Transaction does not exist"})
 
-    # Ensure the book is checked out
-    if transaction.transaction_type != 'checkout':
-        return Response({'error': 'Transaction is not a checkout'}, status=status.HTTP_400_BAD_REQUEST)
 
-    # Update transaction for return
-    transaction.transaction_type = 'return'
-    transaction.save()
+            # Ensure the book is checked out
+            if transaction.transaction_type != 'checkout':
+                return Response({'error': 'Transaction is not a checkout'}, status=status.HTTP_400_BAD_REQUEST)
 
-    # Update book availability status
-    book = transaction.book
-    book.available = True
-    book.save()
+            # Update transaction for return
+            transaction.transaction_type = 'return'
+            transaction.save()
 
-    # Serialize and return updated transaction data
-    serializer = TransactionSerializer(transaction)
-    return Response(serializer.data)
+            # Update book availability status
+            book = transaction.book
+            book.quantity = int(book.quantity) - int(transaction.quantity)
+            book.save()
+            html_message = f"""
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Overdue Book Return Reminder</title>
+            </head>
+            <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+                <div style="max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px; background-color: #f9f9f9;">
+                    <div style="text-align: center; padding-bottom: 20px;">
+                        <img src="your-logo-url" alt="Library Logo" style="max-width: 100px;">
+                        <h1 style="margin: 0;">Public Library</h1>
+                    </div>
+                    <div style="padding: 20px;">
+                        <p>Dear {user.full_name},</p>
+                        <p>This is a friendly reminder that the book <strong>"{book.title}"</strong> you borrowed from our library is overdue for return.</p>
+                        <p>If you have any questions or need assistance, feel free to contact us.</p>
+                        <p>Thank you for your attention to this matter.</p>
+                        <p>Best regards,</p>
+                        <p><strong>Public Library</strong><br></p>
+                    </div>
+                    <div style="text-align: center; padding-top: 20px; font-size: 0.9em; color: #777;">
+                        <p>&copy; 2024 Public Library. All rights reserved.</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+
+
+            """
+
+            if transaction.is_overdue():
+                send_mail(subject="Book is overdue",message="",
+                          from_email=settings.DEFAULT_FROM_EMAIL,
+                          recipient_list=[user.email],
+                          html_message=html_message)
+            late_fees = 0    
+            if transaction.is_overdue():
+                extra_days = transaction.overdue_days()
+                transaction.extra_days = extra_days
+                late_fees = int(extra_days * 10)
+            
+
+
+            transaction.save()
+            # Serialize and return updated transaction data
+            serializer = TransactionSerializer(transaction)
+            serialized_book = BookSerializer(book)
+            serialized_user = CustomUserSerializer(user)
+            return Response({"success":True, "book":serialized_book.data,"user":serialized_user.data, "transaction":serializer.data, "late_fees":late_fees}, status=status.HTTP_201_CREATED)
+        else:
+            return JsonResponse({"error": False, "message": "Please login first"})            
+    except Exception as e:
+        return Response({"error": str(e)})
+
+@api_view(["GET"])
+def getAllTransactions(request):
+    try:
+        token = request.GET.get('token')
+        if not token:
+            return JsonResponse({"error": "Invalid token"})
+        result = verify_token(token)
+        if "error" in result and result["error"]:
+            return JsonResponse({"error": result["error"]})
+        
+        if "success" in result and result["success"] == True:
+            try:
+                decoded_token = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=['HS256'])
+                user_id = decoded_token["user_id"]
+                user = CustomUser.objects.get(id=user_id)
+            except Exception as e:
+                data = {"error": "User not found"}
+                return JsonResponse(data)
+            if not user:
+                return JsonResponse({"error": "User not found"})
+            # Assuming request data includes transaction_id
+            transactions = Transaction.objects.filter(user=user)
+            if not transactions:
+                return JsonResponse({"error": "Transaction does not exist"})
+            serializer = TransactionSerializer(transactions)
+
+            return Response({"success":True, "transaction":serializer.data}, status=status.HTTP_201_CREATED)
+        else:
+            return JsonResponse({"error": False, "message": "Please login first"})            
+    except Exception as e:
+        return Response({"error": str(e)})
