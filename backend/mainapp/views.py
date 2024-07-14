@@ -18,9 +18,13 @@ def check_value(value):
 # Create your views here.
 class Books(generics.RetrieveUpdateDestroyAPIView):    
     def get(self, request):
-
-        return JsonResponse({"success":True})
-
+        try:
+            book = Book.objects.all()
+            serialzier = BookSerializer(book)
+            return JsonResponse({"success":True}, serialzier.data,safe=False)   
+        except Exception as e:
+            print(e)
+            return JsonResponse({"error":"error"})
     def post(self, request):
         try:
             data = json.loads(request.body)
