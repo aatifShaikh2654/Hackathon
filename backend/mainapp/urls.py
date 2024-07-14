@@ -11,6 +11,7 @@ urlpatterns = [
     path("getBooksByUser/",views.GetAllBooksByUser,name="getBooksByUser"),
     path("checkoutBook/",views.checkoutBook,name="checkoutBook"),
     path("returnBook/",views.returnBook,name="returnBook"),
+    path("getAllTransactions/",views.getAllTransactions,name="getAllTransactions"),
 
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

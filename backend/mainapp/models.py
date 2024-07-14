@@ -1,6 +1,6 @@
 from django.db import models
 from accounts.models import CustomUser
-from datetime import timezone
+from django.utils import timezone
 # Create your models here.
 class Book(models.Model):
     isbn = models.CharField(max_length=50,unique=True)
@@ -26,6 +26,7 @@ class Transaction(models.Model):
     checkout_date = models.DateField(auto_now_add=True)
     quantity = models.PositiveIntegerField(null=True, blank=True)
     transaction_type = models.CharField(max_length=100,null=True, blank=True)
+    extra_days = models.PositiveIntegerField(null=True, blank=True, default=0)
     return_date = models.DateField(null=True, blank=True)
 
     def __str__(self):
@@ -35,3 +36,9 @@ class Transaction(models.Model):
         if self.return_date and self.return_date < timezone.now().date():
             return True
         return False
+    
+    def overdue_days(self):
+        if self.return_date and self.return_date < timezone.now().date():
+            overdue_duration = timezone.now().date() - self.return_date
+            return overdue_duration.days
+        return 0
