@@ -21,7 +21,7 @@ class Books(generics.RetrieveUpdateDestroyAPIView):
         try:
             book = Book.objects.all()
             serialzier = BookSerializer(book)
-            return JsonResponse({"success":True}, serialzier.data,safe=False)   
+            return JsonResponse({"success":True, "book":serialzier.data})   
         except Exception as e:
             print(e)
             return JsonResponse({"error":"error"})
