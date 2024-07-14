@@ -16,7 +16,7 @@ const Dashboard = () => {
 
 
       </div>
-      <div className="container">
+      <div className="container mt-3">
         <div className="row">
           <div className="col-lg-6">
             <h1 className={styles.title}>New Arrivals</h1>
