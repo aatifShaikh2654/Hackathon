@@ -49,11 +49,11 @@ function Profile() {
                                 </div>
                                 <div className={styles.location}>
                                     <i class="fa-solid fa-phone"></i>
-                                    <p>+91 98522 XXXXX</p>
+                                    <p>+91 {user.phone}</p>
                                 </div>
                                 <div className={styles.location}>
                                     <i class="fa-solid fa-envelope"></i>
-                                    <p>user@gmail.com</p>
+                                    <p>{user.email}</p>
                                 </div>
                                 <div className={styles.edit}>
                                     <a href="#"><i class="fa-solid fa-pen"></i> Edit Information</a>
