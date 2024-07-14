@@ -23,7 +23,7 @@ def verify_token(token):
         url = BASE_URL + "api/token/verify/"
         headers = {"Authorization": f"Bearer {token}"}
         body = {"token":token}
-        result = requests.get(url, headers=headers, data=body)
+        result = requests.post(url, headers=headers, data=body)
         if result.status_code == 200:
             return {"success":True}
         else:

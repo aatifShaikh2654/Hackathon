@@ -30,7 +30,7 @@ class Books(generics.RetrieveUpdateDestroyAPIView):
             year  = data.get('year')
             date_compos = year.split('-')
             print(date_compos)
-            year = datetime(int(date_compos[1]),int(date_compos[0]),int(date_compos[2])).strftime("%Y-%m-%d")
+            year = datetime(int(date_compos[2]),int(date_compos[1]),int(date_compos[0])).strftime("%Y-%m-%d")
             genre = data.get('genre')
             quantity = data.get('quantity')
             available = data.get('available')
@@ -39,9 +39,13 @@ class Books(generics.RetrieveUpdateDestroyAPIView):
             else:
                 return JsonResponse({"error":"Please provide all required fields"})
             
-            book = Book.objects.create(isbn=isbn, title=title, publisher=publisher, year=year, genre=genre, quantity=quantity, available=available)
+            book = Book.objects.create(isbn=isbn, title=title, publisher=publisher, year=year, genre=genre, quantity=quantity)
+            if available:
+                book.available = available
+                book.save()
             serializer = BookSerializer(book, many=True)
-            return JsonResponse({"success":True, "book":serializer})
+            print("Serializer",serializer.data)
+            return JsonResponse(serializer.data)
         except Exception as e:
             return JsonResponse({"error":str(e)})
     
