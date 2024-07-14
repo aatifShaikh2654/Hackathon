@@ -30,14 +30,11 @@ def check_value(value):
 class Books(generics.RetrieveUpdateDestroyAPIView):    
     def get(self, request):
         try:
-            print("i'm in try")
             book = Book.objects.all()
             serialzier = BookSerializer(book, many = True)
             return JsonResponse({"success":True, "book":serialzier.data})   
         except Exception as e:
-            print("im in error")
-            print(e)
-            return JsonResponse({"error":"error"})
+            return JsonResponse({"error":f"error : {str(e)}"})
         
     def post(self, request):
         try:
@@ -194,9 +191,10 @@ class Books(generics.RetrieveUpdateDestroyAPIView):
 
 
 @api_view(["GET"])
-def getBook(request, isbn=None):
+def getBook(request):
     try:
         token = request.GET.get('token')
+        isbn = request.GET.get('isbn')
         if not token:
             return JsonResponse({"error": "Invalid token"})
         result = verify_token(token)
@@ -255,7 +253,7 @@ def GetAllBooksByUser(request):
     
 
 @api_view(['POST'])
-def checkout_book(request):
+def checkoutBook(request):
     try:
         token = request.GET.get('token')
         if not token:
@@ -275,17 +273,33 @@ def checkout_book(request):
             if not user:
                 return JsonResponse({"error": "User not found"})
             # Assuming request data includes user_id and book_id
-            isbn = request.data.get('isbn')
+            
 
+            isbn = request.data.get('isbn')
+            # full_name = request.data.get('full_name')
+            # email = request.data.get('email')
+            phone_number = request.data.get('phone_number')
+            # address = request.data.get('address')
+            # city = request.data.get('city')
+            # state = request.data.get('state')
+            # pincode = request.data.get('pincode')
+            quantity = request.data.get('quantity')
+
+            if check_value(isbn) == False:
+                return  JsonResponse({"error": "ISBN number is required"})
             # Retrieve user and book objects
             book = get_object_or_404(Book, isbn=isbn)
 
             # Check if the book is available
             if not book.available:
-                return Response({'error': 'Book is already checked out'}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({'error': 'Book is not Available'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            if book.quantity < int(quantity):
+                return Response({'error': f'Only {book.quantity} books available'}, status=status.HTTP_400_BAD_REQUEST)
 
             # Create a transaction record for checkout
-            transaction = Transaction(user=user, book=book, transaction_type='checkout')
+            return_date = ""
+            transaction = Transaction(user=user, book=book, return_date=return_date, transaction_type='checkout')
             transaction.save()
 
             # Update book availability status
@@ -294,7 +308,7 @@ def checkout_book(request):
 
             # Serialize and return transaction data
             serializer = TransactionSerializer(transaction)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response({"success":True, "book":serializer.data}, status=status.HTTP_201_CREATED)
         else:
             return JsonResponse({"error": False, "message": "Please login first"})
     except Exception as e:

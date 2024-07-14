@@ -28,7 +28,6 @@
 }
 .mybooks h1{
     padding-bottom: 10px;
-    border-bottom: 3px solid var(--black);
 }
 .status{
     margin-left: 150px;

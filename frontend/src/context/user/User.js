@@ -6,9 +6,10 @@ import axios from 'axios';
 
 const User = (props) => {
 
-    const { setEmployees, setClient, FCM_token, setFCM_token, setAllTickets, setTickets } = useContext(StateContext)
+    const { setBooks } = useContext(StateContext)
     const [user, setUser] = useState('');
     const token = localStorage.getItem("token")
+
 
     const getUser = async () => {
         try {
@@ -39,7 +40,7 @@ const User = (props) => {
         const data = await fetch("http://127.0.0.1:8000/" + "api/token/verify/", {
             method: 'POST',
             body: JSON.stringify({ "token": token }),
-            headers: { "Content-Type": "application/json", "token": `${token}`}
+            headers: { "Content-Type": "application/json", "token": `${token}` }
         })
         const result = await data.text();
         if (result) {
@@ -51,11 +52,32 @@ const User = (props) => {
         }
     }
 
-return (
-    <UserContext.Provider value={{ user, setUser, getUser, checkUserIsAuthenticated, authenticated }}>
-        {props.children}
-    </UserContext.Provider>
-)
+    const getBooks = async () => {
+        try {
+            const response = await axios.get("http://127.0.0.1:8000/" + `api/books/?token=${token}`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            const json = response.data;
+            console.log(json);
+            if (json.success) {
+                const sorted = json.book.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+                setBooks(sorted);
+            } else {
+                toast.error(json.error || json.message);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    return (
+        <UserContext.Provider value={{ user, setUser, getUser, checkUserIsAuthenticated, authenticated, getBooks }}>
+            {props.children}
+        </UserContext.Provider>
+    )
 }
 
 export default User
