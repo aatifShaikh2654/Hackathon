@@ -8,6 +8,7 @@ import Profile from './dashboard/Profile';
 import {ToastContainer} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 import Checkout from './dashboard/Checkout';
+import Addbook from './components/Addbook';
 
 function App() {
 
@@ -32,6 +33,8 @@ function App() {
           <Route path='/register' element={<Register />} />
           <Route path='/profile' element={<Profile />} />
           <Route path='/checkout' element={<Checkout />} />
+          <Route path='/addbook' element={<Addbook />} />
+
         </Routes>
       </Router>
     </>
