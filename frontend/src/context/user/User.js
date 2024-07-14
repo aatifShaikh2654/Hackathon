@@ -11,15 +11,15 @@ const User = (props) => {
     const token = localStorage.getItem("token")
 
     const getUser = async () => {
-        console.log(token);
         try {
-            const response = await axios.get("http://127.0.0.1:8000/" + `api/get_user/?token=${token}`, {
+            const response = await axios.get("http://127.0.0.1:8000/" + `api/getUser/?token=${token}`, {
                 headers: {
                     'Content-Type': "application/json",
                 }
             });
 
             const json = response.data;
+            console.log(json);
             if (json.success) {
                 setUser(json.user);
             } else {
