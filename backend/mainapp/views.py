@@ -25,10 +25,21 @@ class Books(generics.RetrieveUpdateDestroyAPIView):
         except Exception as e:
             print(e)
             return JsonResponse({"error":"error"})
+        
     def post(self, request):
         try:
             data = json.loads(request.body)
             isbn = data.get('isbn')
+            book_exists = False
+            if check_value(isbn):
+                try:
+                    book_obj = Book.objects.get(isbn=isbn)
+                    if book_obj:
+                        return JsonResponse({"error":"Book with this isbn already exists"})
+                except Book.DoesNotExist:
+                    pass
+            else:
+                return JsonResponse({"error":"ISBN number is Required"})
             title = data.get('title')
             author = data.get('author')
             publisher = data.get('publisher')
