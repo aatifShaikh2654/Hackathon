@@ -1,5 +1,4 @@
 from django.db import models
-
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 
@@ -22,6 +21,12 @@ class CustomUserManager(BaseUserManager):
             raise ValueError("is_superuser must be True")
         
         return self.create_user(email, full_name, password, **kwargs)
+    
+USER_ROLE = (
+    ("admin", "admin"),
+    ("librarian", "librarian"),
+    ("user", "user"),
+)
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     phone_number = models.CharField(max_length=15, blank=True, null=True)
@@ -30,6 +35,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
+    role = models.CharField(choices=USER_ROLE,max_length=100,default="user")
     name = models.CharField(max_length=40, blank=True, null=True)
     address = models.CharField(max_length=500, blank=True, null=True)
     city = models.CharField(max_length=60, blank=True, null=True)
