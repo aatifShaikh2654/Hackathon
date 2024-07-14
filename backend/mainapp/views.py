@@ -182,3 +182,29 @@ class Books(generics.RetrieveUpdateDestroyAPIView):
             return JsonResponse({"error":str(e)})
 
 
+@api_view(["GET"])
+def getBook(request, isbn=None):
+    try:
+        token = request.query_params.get('token')
+        if not token:
+            return JsonResponse({"error": "Invalid token"})
+        result = verify_token(token)
+        if "error" in result and result["error"]:
+            return JsonResponse({"error": result["error"]})
+        
+        if "success" in result and result["success"] == True:
+            try:
+                decoded_token = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=['HS256'])
+                user_id = decoded_token["user_id"]
+                user = CustomUser.objects.get(id=user_id)
+            except Exception as e:
+                data = {"error": "User not found"}
+                return JsonResponse(data)
+            if isbn is None:
+                return JsonResponse({"error": "ISBN is required"})
+            book = Book.objects.get(isbn=isbn)
+            serializer = BookSerializer(book)
+            return JsonResponse({"success": True, "book": serializer.data})
+    except Exception as e:
+        return JsonResponse({"error":str(e)})
+    
