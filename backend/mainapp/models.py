@@ -24,6 +24,8 @@ class Transaction(models.Model):
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     checkout_date = models.DateField(auto_now_add=True)
+    quantity = models.PositiveIntegerField(null=True, blank=True)
+    transaction_type = models.CharField(max_length=100,null=True, blank=True)
     return_date = models.DateField(null=True, blank=True)
 
     def __str__(self):
