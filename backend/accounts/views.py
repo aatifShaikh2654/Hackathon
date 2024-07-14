@@ -23,7 +23,7 @@ def verify_token(token):
         url = BASE_URL + "api/token/verify/"
         headers = {"Authorization": f"Bearer {token}"}
         body = {"token":token}
-        result = requests.get(url, headers=headers, data=body)
+        result = requests.post(url, headers=headers, data=body)
         if result.status_code == 200:
             return {"success":True}
         else:
@@ -36,13 +36,18 @@ def verify_token(token):
 def signup(request):
     try:
         if request.method == 'POST':
-            data = json.loads(request.body)
+            try:
+                if not request.body:
+                    return JsonResponse({"error":"Body is required"})
+                data = json.loads(request.body)
+            except Exception as e:
+                return JsonResponse({"error":f"Something went wrong {str(e)}"})
             email = data.get('email', '')
             full_name = data.get('full_name', '')
             password = data.get('password', '')
             # Check for validation
             if (email == None or email == '') or (full_name == None or full_name == '') or (password == None or password == ''):
-                data = {"error":"none fields","message":"Please enter details"}
+                data = {"error":"none fields","message":"Please enter all required details"}
                 return JsonResponse(data)
             data = {"success": "success"}
             # Check the User's email already exists
