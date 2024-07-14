@@ -99,6 +99,8 @@ def login(request):
             user = authenticate(email=email, password=password)
             # Checking password
             if user:
+                if user.role == "librarian" and not user.verified:
+                    return JsonResponse({"error":"Please verify before continuing"})
                 try:
                     ip_address = request.META.get('HTTP_X_FORWARDED_FOR')
                     if ip_address:
