@@ -8,6 +8,7 @@
 .search h1{
     font-size: 2.5rem;
     text-align: center;
+    color: #F08C00;
 }
 .searchbox{
     width: 800px;
@@ -22,10 +23,24 @@
     border-radius: 10px;
     border: 1px solid var(--black);
 }
-
+.title{
+    margin-left: 10px;
+}
 
 @media(max-width:890px){
     .search h1{
-        
+        font-size: 1.5rem;
+    }
+    .searchbox{
+        width: 550px;
+    }
+  
+}
+@media(max-width:570px){
+    .search h1{
+        font-size: 1rem;
+    }
+    .searchbox{
+        width: 100%;
     }
 }
